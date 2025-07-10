@@ -127,6 +127,7 @@ public function saveBlog(): void
 ## Авторы
 
 - [Vladimir Bajenov](https://github.com/mountainclans)
+- [ueberdosis](https://github.com/ueberdosis/tiptap)
 - [Flowbite](https://github.com/themesberg/flowbite)
 - [All Contributors](../../contributors)
 

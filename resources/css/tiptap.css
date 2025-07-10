@@ -1,7 +1,20 @@
-.dark .tiptap h2,
-.dark .tiptap h3,
-.dark .tiptap h4,
-.dark .tiptap h5,
-.dark .tiptap h6 {
-    color: #a8a8a8 !important;
+.dark\:format-invert:where(.dark, .dark *) {
+    --tw-format-body: var(--tw-format-invert-body);
+    --tw-format-headings: var(--tw-format-invert-headings);
+    --tw-format-lead: var(--tw-format-invert-lead);
+    --tw-format-links: var(--tw-format-invert-links);
+    --tw-format-bold: var(--tw-format-invert-bold);
+    --tw-format-counters: var(--tw-format-invert-counters);
+    --tw-format-bullets: var(--tw-format-invert-bullets);
+    --tw-format-hr: var(--tw-format-invert-hr);
+    --tw-format-quotes: var(--tw-format-invert-quotes);
+    --tw-format-quote-borders: var(--tw-format-invert-quote-borders);
+    --tw-format-captions: var(--tw-format-invert-captions);
+    --tw-format-code: var(--tw-format-invert-code);
+    --tw-format-code-bg: var(--tw-format-invert-code-bg);
+    --tw-format-pre-code: var(--tw-format-invert-pre-code);
+    --tw-format-pre-bg: var(--tw-format-invert-pre-bg);
+    --tw-format-th-borders: var(--tw-format-invert-th-borders);
+    --tw-format-td-borders: var(--tw-format-invert-td-borders);
+    --tw-format-th-bg: var(--tw-format-invert-th-bg);
 }
