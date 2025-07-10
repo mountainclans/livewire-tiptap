@@ -8,6 +8,12 @@
 composer require mountainclans/livewire-tiptap
 ```
 
+Поскольку пакет основан на [Tiptap Editor](), установите его командой
+
+```bash
+npm install @tiptap/core @tiptap/pm @tiptap/starter-kit
+```
+
 Опубликуйте и примените миграцию:
 
 ```bash
@@ -15,51 +21,23 @@ php artisan vendor:publish --tag="livewire-tiptap-migrations"
 php artisan migrate
 ```
 
-You can publish the config file with:
+Добавьте в `app.js` следующие строки:
 
-```bash
-php artisan vendor:publish --tag="livewire-tiptap-config"
+```js
+import tiptap from '../../vendor/mountainclans/livewire-tiptap/resources/js/tiptap';
+Alpine.data('tiptap', tiptap);
 ```
 
-This is the contents of the published config file:
-
-```php
-return [
-];
-```
-
-Optionally, you can publish the views using
+---
+Опционально, Вы можете опубликовать `views` для их переопределения:
 
 ```bash
 php artisan vendor:publish --tag="livewire-tiptap-views"
 ```
 
-## Usage
+## Использование
 
-```php
-$livewireTiptap = new MountainClans\LivewireTiptap();
-echo $livewireTiptap->echoPhrase('Hello, MountainClans!');
-```
-
-## Testing
-
-```bash
-composer test
-```
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
-
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
-## Credits
+## Авторы
 
 - [Vladimir Bajenov](https://github.com/mountainclans)
 - [All Contributors](../../contributors)
