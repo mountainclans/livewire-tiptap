@@ -21,14 +21,51 @@ import tiptap from '../../vendor/mountainclans/livewire-tiptap/resources/js/tipt
 Alpine.data('tiptap', tiptap);
 ```
 
-_Обратите внимание, что для корректной стилизации в вашем проекте должен использоваться TailwindCSS._
+Добавьте в `app.css` следующие строки:
 
-Добавьте в `tailwind.config.js` в секцию `content`:
-
-```js
-'./vendor/mountainclans/livewire-tiptap/resources/views/**/*.blade.php'
+```css
+@import '../../vendor/mountainclans/livewire-tiptap/resources/css/tiptap.css';
 ```
 
+_Обратите внимание, что для корректной стилизации в вашем проекте должен использоваться TailwindCSS._
+
+Добавьте в `tailwind.config.js` следующие блоки:
+
+```js
+export default {
+    content: [
+        './vendor/mountainclans/livewire-tiptap/resources/views/**/*.blade.php',
+    ],
+    plugins: [
+        require("flowbite/plugin")({
+            wysiwyg: true,
+        }),
+        require("flowbite-typography"),
+    ],
+    safelist: [
+        'max-w-none',
+        'text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl',
+        'w-4', 'h-4', 'w-6', 'h-6', "h-9", 'w-fit', 'max-w-full', 'h-auto',
+        'block', 'relative', 'absolute', 'flex',
+        "w-64", "w-1/2",
+        "rounded-l-lg", "rounded-r-lg",
+        "bg-gray-200", 'bg-gray-600', 'bg-gray-700', 'bg-gray-900', "bg-opacity-50", "dark:bg-opacity-80",
+        "grid-cols-4", "grid-cols-7",
+        "leading-6", "leading-9",
+        "shadow-lg",
+        "lg:format-md",
+        'top-1', 'right-1',
+        'my-0', 'my-1',
+        'hover:bg-gray-400',
+        'rounded', 'rounded-lg',
+        'text-center', 'text-white', 'text-xs',
+        'items-center', 'justify-center',
+        'mx-auto',
+        'cursor-pointer',
+        'border-none', 'select-none',
+    ]
+}
+```
 ---
 ### Если редактор используется для заливки изображений:
 
@@ -90,6 +127,7 @@ public function saveBlog(): void
 ## Авторы
 
 - [Vladimir Bajenov](https://github.com/mountainclans)
+- [Flowbite](https://github.com/themesberg/flowbite)
 - [All Contributors](../../contributors)
 
 ## License
