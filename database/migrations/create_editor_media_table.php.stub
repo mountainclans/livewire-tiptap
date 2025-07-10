@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up()
     {
-        Schema::create('migration_editor_media_table', function (Blueprint $table) {
+        Schema::create('editor_media', function (Blueprint $table) {
            $table->ulid('id')->primary();
            $table->string('path');
            $table->string('model_type')->nullable();
