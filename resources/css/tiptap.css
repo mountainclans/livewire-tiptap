@@ -18,3 +18,7 @@
     --tw-format-td-borders: var(--tw-format-invert-td-borders);
     --tw-format-th-bg: var(--tw-format-invert-th-bg);
 }
+
+.ProseMirror {
+    height: 100%;
+}
