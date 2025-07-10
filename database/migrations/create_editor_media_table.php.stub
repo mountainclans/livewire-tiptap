@@ -1,0 +1,23 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up()
+    {
+        Schema::create('migration_editor_media_table', function (Blueprint $table) {
+           $table->ulid('id')->primary();
+           $table->string('path');
+           $table->string('model_type')->nullable();
+           $table->string('model_id')->nullable();
+           $table->string('field')->nullable();
+           $table->timestamps();
+
+           $table->index(['model_type', 'model_id']);
+           $table->index('path');
+        });
+    }
+};
