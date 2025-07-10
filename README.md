@@ -14,13 +14,6 @@ composer require mountainclans/livewire-tiptap
 npm install @tiptap/core @tiptap/pm @tiptap/starter-kit
 ```
 
-Опубликуйте и примените миграцию:
-
-```bash
-php artisan vendor:publish --tag="livewire-tiptap-migrations"
-php artisan migrate
-```
-
 Добавьте в `app.js` следующие строки:
 
 ```js
@@ -34,6 +27,16 @@ _Обратите внимание, что для корректной стил�
 
 ```js
 './vendor/mountainclans/livewire-tiptap/resources/views/**/*.blade.php'
+```
+
+---
+### Если редактор используется для заливки изображений:
+
+Опубликуйте и примените миграцию:
+
+```bash
+php artisan vendor:publish --tag="livewire-tiptap-migrations"
+php artisan migrate
 ```
 
 ---
@@ -55,6 +58,34 @@ php artisan vendor:publish --tag="livewire-tiptap-views"
 ```
 
 Используйте атрибут `translatable`, если Вы хотите использовать компонент вместе с [<x-translatable>](https://github.com/mountainclans/livewire-translatable).
+
+### Настройка модели для обработки изображений
+Если Вы заливаете картинки в контент текстового редактора, необходимо настроить их обработку в модели.
+
+Используйте трейт:
+
+```php
+
+class YourModel extends Model
+{
+    use MountainClans\LivewireTiptap\Traits\HasEditorMedia;
+}
+```
+
+После сохранения модели с новым полем (в примере `content`), вызовите метод
+`processUploadedImages`:
+
+```php
+public function saveBlog(): void
+{
+    $this->validateInput();
+    $this->blog->setTranslations('content', $this->content);
+    // или $this->blog->content = $this->content, если поле не переводимое
+    $this->blog->save();
+    
+    $this->blog->processUploadedImages('content');
+}
+```
 
 ## Авторы
 
