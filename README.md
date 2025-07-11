@@ -76,6 +76,12 @@ php artisan vendor:publish --tag="livewire-tiptap-migrations"
 php artisan migrate
 ```
 
+Добавьте в секцию `<head>` шаблона мета-тег `csrf-token`, который необходим для корректной работы запросов при загрузке изображений:
+
+```bladehtml
+<meta name="csrf-token" content="{{ csrf_token() }}">
+```
+
 ---
 Опционально, Вы можете опубликовать `views` для их переопределения:
 
