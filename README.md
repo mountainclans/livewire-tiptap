@@ -100,7 +100,7 @@ php artisan vendor:publish --tag="livewire-tiptap-views"
 />
 ```
 
-Используйте атрибут `translatable`, если Вы хотите использовать компонент вместе с [<x-translatable>](https://github.com/mountainclans/livewire-translatable).
+Используйте атрибут `translatable`, если Вы хотите использовать компонент как [translatable поле](https://github.com/mountainclans/livewire-translatable).
 
 ### Настройка модели для обработки изображений
 Если Вы заливаете картинки в контент текстового редактора, необходимо настроить их обработку в модели.
