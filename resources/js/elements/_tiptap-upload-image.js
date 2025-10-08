@@ -7,10 +7,7 @@ const uploadFile = async function (editor, file) {
 
     const response = await fetch('/tiptap/upload-image', {
         method: 'POST',
-        body: formData,
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-        }
+        body: formData
     })
 
     const { url } = await response.json()
