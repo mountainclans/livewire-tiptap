@@ -21,7 +21,7 @@ class TiptapImagesController
         $manager = new ImageManager(new Driver());
         $image = $manager->read($file->getPathname());
 
-        $image->scaleDown(width: 1200);
+        $image->scaleDown(width: 1290);
 
         $filename = Str::uuid() . '.webp';
         $relativePath = 'tiptap/' . $filename;
