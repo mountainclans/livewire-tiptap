@@ -55,7 +55,7 @@ export const CustomInlineImage = Node.create({
         return ({ node, getPos, editor }) => {
             const container = document.createElement('span')
             container.setAttribute('data-inline-image', '')
-            container.className = 'block bg-gray-600 rounded my-1 text-center w-fit mx-auto relative'
+            container.className = 'block rounded my-1 text-center w-fit mx-auto relative'
 
             // Картинка
             const img = document.createElement('img')
