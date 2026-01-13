@@ -37,7 +37,7 @@ export const CustomInlineImage = Node.create({
             'span',
             {
                 'data-inline-image': '',
-                class: 'block bg-gray-600 rounded my-1 text-center w-fit mx-auto',
+                class: 'block rounded my-1 text-center w-fit mx-auto',
                 contenteditable: 'false',
             },
             [
