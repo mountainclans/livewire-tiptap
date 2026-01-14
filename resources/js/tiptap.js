@@ -227,6 +227,35 @@ export default function tiptap(content){
         },
 
         deleteTable() {
+            const { state } = editor;
+            const { selection } = state;
+            const { $anchor } = selection;
+
+            let tableWrapperPos = null;
+
+            for (let depth = $anchor.depth; depth > 0; depth--) {
+                const node = $anchor.node(depth);
+
+                if (node.type.name === 'tableWrapper') {
+                    tableWrapperPos = $anchor.before(depth);
+                    break;
+                }
+            }
+
+            if (tableWrapperPos !== null) {
+                const node = state.doc.nodeAt(tableWrapperPos);
+                if (node) {
+                    editor.chain()
+                        .focus()
+                        .deleteRange({
+                            from: tableWrapperPos,
+                            to: tableWrapperPos + node.nodeSize
+                        })
+                        .run();
+                    return;
+                }
+            }
+
             editor?.chain().focus().deleteTable().run();
         },
 
