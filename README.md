@@ -11,7 +11,7 @@ composer require mountainclans/livewire-tiptap
 Поскольку пакет основан на [Tiptap Editor](), установите его командой
 
 ```bash
-npm install @tiptap/core @tiptap/pm @tiptap/starter-kit
+npm install @tiptap/core @tiptap/pm @tiptap/starter-kit @tiptap/extension-table @tiptap/extension-table-row @tiptap/extension-table-header @tiptap/extension-table-cell
 ```
 
 Добавьте в `app.js` следующие строки:
@@ -87,6 +87,8 @@ php artisan vendor:publish --tag="livewire-tiptap-views"
 
 ```bladehtml
 <x-ui.tiptap wire:model="content"
+             :with-image="true"
+             :with-table="true"
              translatable
              height="700"
              placeholder="{{ __('Content') }}"

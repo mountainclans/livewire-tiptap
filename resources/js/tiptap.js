@@ -10,13 +10,19 @@ import {ConfiguredStarterKit} from "./elements/_tiptap-configured-starter-kit.js
 import {ConfiguredTextStyle} from "./elements/_tiptap-configured-text-style.js";
 import {ConfiguredTextAlign} from "./elements/_tiptap-configured-text-align.js";
 import {CustomInlineImage} from "./elements/_tiptap-image-node.js";
+import {
+    ConfiguredTable,
+    ConfiguredTableRow,
+    ConfiguredTableHeader,
+    ConfiguredTableCell
+} from "./elements/_tiptap-configured-table.js";
 
 export default function tiptap(content){
-    let editor; // не делать полем объекта, т.к. оно проксируется и tiptap перестаёт работать
+    let editor;
 
     return {
         content: content,
-        updatedAt: Date.now(), // force Alpine to rerender on selection change
+        updatedAt: Date.now(),
 
         init(element) {
             const _this = this;
@@ -35,6 +41,10 @@ export default function tiptap(content){
                     ConfiguredTextAlign,
                     ImageUploadPlaceholder,
                     CustomInlineImage,
+                    ConfiguredTable,
+                    ConfiguredTableRow,
+                    ConfiguredTableHeader,
+                    ConfiguredTableCell,
                 ],
                 content: this.content,
                 editorProps: {
@@ -98,7 +108,6 @@ export default function tiptap(content){
         },
 
         isAnyHeading() {
-            // || this.isHeading(1) // h1 не должен использоваться в редакторе
             return this.isHeading(2)
                 || this.isHeading(3)
                 || this.isHeading(4)
@@ -143,7 +152,6 @@ export default function tiptap(content){
 
         isTextSized() {
             return this.isTextSize('12px')
-                // || this.isTextSize('16px') // это размер по умолчанию, если выбран он - игнорируем
                 || this.isTextSize('14px')
                 || this.isTextSize('18px')
                 || this.isTextSize('24px')
@@ -155,11 +163,64 @@ export default function tiptap(content){
         },
 
         isTextAligned(alignment) {
-            return editor?.isActive({ textAlign: alignment }, this.updatedAt) || false;
+            editor?.isActive({ textAlign: alignment }, this.updatedAt) || false;
         },
 
         addImage() {
-            return editor?.chain().focus().insertContent({ type: 'imageUploadPlaceholder' }).run()
+            editor?.chain().focus().insertContent({ type: 'imageUploadPlaceholder' }).run()
+        },
+
+        // Методы для работы с таблицами
+        insertTable() {
+            editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+        },
+
+        addColumnBefore() {
+            editor?.chain().focus().addColumnBefore().run();
+        },
+
+        addColumnAfter() {
+            editor?.chain().focus().addColumnAfter().run();
+        },
+
+        deleteColumn() {
+            editor?.chain().focus().deleteColumn().run();
+        },
+
+        addRowBefore() {
+            editor?.chain().focus().addRowBefore().run();
+        },
+
+        addRowAfter() {
+            editor?.chain().focus().addRowAfter().run();
+        },
+
+        deleteRow() {
+            editor?.chain().focus().deleteRow().run();
+        },
+
+        deleteTable() {
+            editor?.chain().focus().deleteTable().run();
+        },
+
+        mergeCells() {
+            editor?.chain().focus().mergeCells().run();
+        },
+
+        splitCell() {
+            editor?.chain().focus().splitCell().run();
+        },
+
+        toggleHeaderRow() {
+            editor?.chain().focus().toggleHeaderRow().run();
+        },
+
+        toggleHeaderColumn() {
+            editor?.chain().focus().toggleHeaderColumn().run();
+        },
+
+        toggleHeaderCell() {
+            editor?.chain().focus().toggleHeaderCell().run();
         },
 
         // Проверка состояний
@@ -176,5 +237,3 @@ export default function tiptap(content){
         }
     }
 }
-
-
