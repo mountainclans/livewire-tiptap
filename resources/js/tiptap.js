@@ -11,6 +11,7 @@ import {ConfiguredTextStyle} from "./elements/_tiptap-configured-text-style.js";
 import {ConfiguredTextAlign} from "./elements/_tiptap-configured-text-align.js";
 import {CustomInlineImage} from "./elements/_tiptap-image-node.js";
 import {
+    TableWrapper,
     ConfiguredTable,
     ConfiguredTableRow,
     ConfiguredTableHeader,
@@ -41,6 +42,7 @@ export default function tiptap(content){
                     ConfiguredTextAlign,
                     ImageUploadPlaceholder,
                     CustomInlineImage,
+                    TableWrapper,
                     ConfiguredTable,
                     ConfiguredTableRow,
                     ConfiguredTableHeader,
