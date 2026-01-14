@@ -174,7 +174,32 @@ export default function tiptap(content){
 
         // Методы для работы с таблицами
         insertTable() {
-            editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run();
+            // Создаем обертку с таблицей внутри
+            editor?.chain()
+                .focus()
+                .insertContent({
+                    type: 'tableWrapper',
+                    content: [{
+                        type: 'table',
+                        content: [
+                            {
+                                type: 'tableRow',
+                                content: Array(3).fill(0).map(() => ({
+                                    type: 'tableHeader',
+                                    content: [{ type: 'paragraph' }]
+                                }))
+                            },
+                            ...Array(2).fill(0).map(() => ({
+                                type: 'tableRow',
+                                content: Array(3).fill(0).map(() => ({
+                                    type: 'tableCell',
+                                    content: [{ type: 'paragraph' }]
+                                }))
+                            }))
+                        ]
+                    }]
+                })
+                .run();
         },
 
         addColumnBefore() {
