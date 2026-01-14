@@ -6,4 +6,8 @@ export const ConfiguredStarterKit = StarterKit.configure({
     marks: {
         bold: false,
     },
+    // не удаляем пустые параграфы
+    hardBreak: {
+        keepMarks: true,
+    },
 });
