@@ -11,7 +11,7 @@ composer require mountainclans/livewire-tiptap
 Поскольку пакет основан на [Tiptap Editor](), установите его командой
 
 ```bash
-npm install @tiptap/core @tiptap/pm @tiptap/starter-kit @tiptap/extension-table @tiptap/extension-table-row @tiptap/extension-table-header @tiptap/extension-table-cell
+npm install @tiptap/core @tiptap/pm @tiptap/starter-kit  @tiptap/extension-table@^2.0.0 @tiptap/extension-table-row@^2.0.0 @tiptap/extension-table-header@^2.0.0 @tiptap/extension-table-cell@^2.0.0
 ```
 
 Добавьте в `app.js` следующие строки:
