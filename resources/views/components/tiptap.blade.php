@@ -2,6 +2,7 @@
     'label',
     'height' => null,
     'withImage' => false,
+    'withTable' => false,
 ])
 
 @php
@@ -288,8 +289,9 @@
                     <x-ui.tiptap-button :label="__('Format')"
                                         :showDropdown="true"
                     >
-                        <span class="flex items-center justify-center rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-50 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500 dark:hover:text-white dark:focus:ring-gray-600 -m-1.5"
-                              :class="{ 'text-yellow-700 dark:text-yellow-500': isAnyHeading() }"
+                        <span
+                            class="flex items-center justify-center rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-50 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500 dark:hover:text-white dark:focus:ring-gray-600 -m-1.5"
+                            :class="{ 'text-yellow-700 dark:text-yellow-500': isAnyHeading() }"
                         >
                             {{ __('Format') }}
 
@@ -312,7 +314,7 @@
                             <ul class="space-y-1 text-sm font-medium">
                                 <li>
                                     <button x-on:click="setParagraph(); showDropdown = false;"
-                                        type="button"
+                                            type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                     >
                                         {{ __('Paragraph') }}
@@ -488,11 +490,11 @@
                         </svg>
                     </x-ui.tiptap-button>
 
-                    <div class="px-1">
-                        <span class="block w-px h-4 bg-gray-300 dark:bg-gray-600"></span>
-                    </div>
-
                     @if($withImage)
+                        <div class="px-1">
+                            <span class="block w-px h-4 bg-gray-300 dark:bg-gray-600"></span>
+                        </div>
+
                         <x-ui.tiptap-button :label="__('Add image')"
                                             click-action="addImage()"
                                             is-active="false"
@@ -514,6 +516,126 @@
                                       clip-rule="evenodd"
                                 ></path>
                             </svg>
+                        </x-ui.tiptap-button>
+                    @endif
+
+                    @if($withTable)
+                        <div class="px-1">
+                            <span class="block w-px h-4 bg-gray-300 dark:bg-gray-600"></span>
+                        </div>
+
+                        <!-- Таблица -->
+                        <x-ui.tiptap-button :label="__('Table')"
+                                            :showDropdown="true"
+                        >
+                            <svg class="w-5 h-5"
+                                 aria-hidden="true"
+                                 xmlns="http://www.w3.org/2000/svg"
+                                 width="24"
+                                 height="24"
+                                 fill="none"
+                                 viewBox="0 0 24 24"
+                            >
+                                <path stroke="currentColor"
+                                      stroke-linecap="round"
+                                      stroke-linejoin="round"
+                                      stroke-width="2"
+                                      d="M3 15v3c0 .5523.44772 1 1 1h16c.5523 0 1-.4477 1-1v-3M3 15V9m0 6h18M3 9V6c0-.55228.44772-1 1-1h16c.5523 0 1 .44772 1 1v3M3 9h18m-9 0v10m-4.5-4.5h9"
+                                />
+                            </svg>
+
+                            <x-slot name="dropdown">
+                                <ul class="space-y-1 text-sm font-medium">
+                                    <li>
+                                        <button x-on:click="insertTable(); showDropdown = false;"
+                                                type="button"
+                                                class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
+                                        >
+                                            {{ __('Insert table') }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button x-on:click="addColumnBefore(); showDropdown = false;"
+                                                type="button"
+                                                class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
+                                        >
+                                            {{ __('Add column before') }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button x-on:click="addColumnAfter(); showDropdown = false;"
+                                                type="button"
+                                                class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
+                                        >
+                                            {{ __('Add column after') }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button x-on:click="deleteColumn(); showDropdown = false;"
+                                                type="button"
+                                                class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
+                                        >
+                                            {{ __('Delete column') }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button x-on:click="addRowBefore(); showDropdown = false;"
+                                                type="button"
+                                                class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
+                                        >
+                                            {{ __('Add row before') }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button x-on:click="addRowAfter(); showDropdown = false;"
+                                                type="button"
+                                                class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
+                                        >
+                                            {{ __('Add row after') }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button x-on:click="deleteRow(); showDropdown = false;"
+                                                type="button"
+                                                class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
+                                        >
+                                            {{ __('Delete row') }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button x-on:click="mergeCells(); showDropdown = false;"
+                                                type="button"
+                                                class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
+                                        >
+                                            {{ __('Merge cells') }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button x-on:click="splitCell(); showDropdown = false;"
+                                                type="button"
+                                                class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
+                                        >
+                                            {{ __('Split cell') }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button x-on:click="toggleHeaderRow(); showDropdown = false;"
+                                                type="button"
+                                                class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
+                                        >
+                                            {{ __('Toggle header row') }}
+                                        </button>
+                                    </li>
+                                    <li>
+                                        <button x-on:click="deleteTable(); showDropdown = false;"
+                                                type="button"
+                                                class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-red-600 dark:hover:bg-gray-600 dark:text-red-400 cursor-pointer"
+                                        >
+                                            {{ __('Delete table') }}
+                                        </button>
+                                    </li>
+                                </ul>
+                            </x-slot>
                         </x-ui.tiptap-button>
                     @endif
 
