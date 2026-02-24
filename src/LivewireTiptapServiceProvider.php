@@ -16,6 +16,7 @@ class LivewireTiptapServiceProvider extends PackageServiceProvider
         $package
             ->name('livewire-tiptap')
             ->hasViews()
+            ->hasTranslations()
             ->hasMigration('create_editor_media_table');
     }
 

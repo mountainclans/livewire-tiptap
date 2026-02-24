@@ -34,7 +34,7 @@
             <div class="flex flex-wrap items-center">
                 <div class="flex items-center space-x-1 rtl:space-x-reverse flex-wrap">
 
-                    <x-ui.tiptap-button :label="__('Bold')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.bold')"
                                         click-action="toggleBold()"
                                         is-active="isActive('bold', updatedAt)"
                     >
@@ -51,7 +51,7 @@
                         </svg>
                     </x-ui.tiptap-button>
 
-                    <x-ui.tiptap-button :label="__('Italic')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.italic')"
                                         click-action="toggleItalic()"
                                         is-active="isActive('italic', updatedAt)"
                     >
@@ -72,7 +72,7 @@
                         </svg>
                     </x-ui.tiptap-button>
 
-                    <x-ui.tiptap-button :label="__('Underline')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.underline')"
                                         click-action="toggleUnderline()"
                                         is-active="isActive('underline', updatedAt)"
                     >
@@ -92,7 +92,7 @@
                         </svg>
                     </x-ui.tiptap-button>
 
-                    <x-ui.tiptap-button :label="__('Strike')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.strike')"
                                         click-action="toggleStrike()"
                                         is-active="isActive('strike', updatedAt)"
                     >
@@ -113,7 +113,7 @@
                         </svg>
                     </x-ui.tiptap-button>
 
-                    <x-ui.tiptap-button :label="__('Link')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.link')"
                                         click-action="addLink()"
                                         is-active="false"
                     >
@@ -134,7 +134,7 @@
                         </svg>
                     </x-ui.tiptap-button>
 
-                    <x-ui.tiptap-button :label="__('Remove link')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.remove_link')"
                                         click-action="removeLink()"
                                         is-active="isActive('link', updatedAt)"
                     >
@@ -154,7 +154,7 @@
                         </svg>
                     </x-ui.tiptap-button>
 
-                    <x-ui.tiptap-button :label="__('Bullet list')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.bullet_list')"
                                         click-action="toggleBulletList()"
                                         is-active="isActive('bulletList', updatedAt)"
                     >
@@ -174,7 +174,7 @@
                         </svg>
                     </x-ui.tiptap-button>
 
-                    <x-ui.tiptap-button :label="__('Ordered list')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.ordered_list')"
                                         click-action="toggleOrderedList()"
                                         is-active="isActive('orderedList', updatedAt)"
                     >
@@ -195,7 +195,7 @@
                         </svg>
                     </x-ui.tiptap-button>
 
-                    <x-ui.tiptap-button :label="__('Blockquote')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.blockquote')"
                                         click-action="toggleBlockquote()"
                                         is-active="isActive('blockquote', updatedAt)"
                     >
@@ -218,7 +218,7 @@
                         <span class="block w-px h-4 bg-gray-300 dark:bg-gray-600"></span>
                     </div>
 
-                    <x-ui.tiptap-button :label="__('Text size')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.text_size')"
                                         :showDropdown="true"
                                         is-active="isTextSized()"
                     >
@@ -245,55 +245,55 @@
                                             :class="{ 'text-yellow-700 dark:text-yellow-500': isTextSize('16px') }"
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
-                                    >{{ __('16px (Default)') }}</button>
+                                    >{{ __('livewire-tiptap::tiptap.size_default') }}</button>
                                 </li>
                                 <li>
                                     <button x-on:click="setTextSize('12px'); showDropdown = false;"
                                             :class="{ 'text-yellow-700 dark:text-yellow-500': isTextSize('12px') }"
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
-                                    >{{ __('12px') }}</button>
+                                    >{{ __('livewire-tiptap::tiptap.size_12') }}</button>
                                 </li>
                                 <li>
                                     <button x-on:click="setTextSize('14px'); showDropdown = false;"
                                             :class="{ 'text-yellow-700 dark:text-yellow-500': isTextSize('14px') }"
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
-                                    >{{ __('14px') }}</button>
+                                    >{{ __('livewire-tiptap::tiptap.size_14') }}</button>
                                 </li>
                                 <li>
                                     <button x-on:click="setTextSize('18px'); showDropdown = false;"
                                             :class="{ 'text-yellow-700 dark:text-yellow-500': isTextSize('18px') }"
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
-                                    >{{ __('18px') }}</button>
+                                    >{{ __('livewire-tiptap::tiptap.size_18') }}</button>
                                 </li>
                                 <li>
                                     <button x-on:click="setTextSize('24px'); showDropdown = false;"
                                             :class="{ 'text-yellow-700 dark:text-yellow-500': isTextSize('24px') }"
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
-                                    >{{ __('24px') }}</button>
+                                    >{{ __('livewire-tiptap::tiptap.size_24') }}</button>
                                 </li>
                                 <li>
                                     <button x-on:click="setTextSize('32px'); showDropdown = false;"
                                             :class="{ 'text-yellow-700 dark:text-yellow-500': isTextSize('32px') }"
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
-                                    >{{ __('36px') }}</button>
+                                    >{{ __('livewire-tiptap::tiptap.size_36') }}</button>
                                 </li>
                             </ul>
                         </x-slot>
                     </x-ui.tiptap-button>
 
-                    <x-ui.tiptap-button :label="__('Format')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.format')"
                                         :showDropdown="true"
                     >
                         <span
                             class="flex items-center justify-center rounded-lg bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-500 hover:bg-gray-200 hover:text-gray-900 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-50 dark:bg-gray-600 dark:text-gray-400 dark:hover:bg-gray-500 dark:hover:text-white dark:focus:ring-gray-600 -m-1.5"
                             :class="{ 'text-yellow-700 dark:text-yellow-500': isAnyHeading() }"
                         >
-                            {{ __('Format') }}
+                            {{ __('livewire-tiptap::tiptap.format') }}
 
                             <svg class="-me-0.5 ms-1.5 h-3.5 w-3.5"
                                  aria-hidden="true"
@@ -317,7 +317,7 @@
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                     >
-                                        {{ __('Paragraph') }}
+                                        {{ __('livewire-tiptap::tiptap.paragraph') }}
 
                                         <div class="space-x-1.5">
                                             <kbd
@@ -335,7 +335,7 @@
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                     >
-                                        {{ __('Heading 2') }}
+                                        {{ __('livewire-tiptap::tiptap.heading_2') }}
 
                                         <div class="space-x-1.5">
                                             <kbd
@@ -353,7 +353,7 @@
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                     >
-                                        {{ __('Heading 3') }}
+                                        {{ __('livewire-tiptap::tiptap.heading_3') }}
 
                                         <div class="space-x-1.5">
                                             <kbd
@@ -371,7 +371,7 @@
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                     >
-                                        {{ __('Heading 4') }}
+                                        {{ __('livewire-tiptap::tiptap.heading_4') }}
 
                                         <div class="space-x-1.5">
                                             <kbd
@@ -389,7 +389,7 @@
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                     >
-                                        {{ __('Heading 5') }}
+                                        {{ __('livewire-tiptap::tiptap.heading_5') }}
 
                                         <div class="space-x-1.5">
                                             <kbd
@@ -407,7 +407,7 @@
                                             type="button"
                                             class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                     >
-                                        {{ __('Heading 6') }}
+                                        {{ __('livewire-tiptap::tiptap.heading_6') }}
 
                                         <div class="space-x-1.5">
                                             <kbd
@@ -427,7 +427,7 @@
                         <span class="block w-px h-4 bg-gray-300 dark:bg-gray-600"></span>
                     </div>
 
-                    <x-ui.tiptap-button :label="__('Align left')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.align_left')"
                                         click-action="setTextAlignment('left')"
                                         is-active="isTextAligned('left')"
                     >
@@ -448,7 +448,7 @@
                         </svg>
                     </x-ui.tiptap-button>
 
-                    <x-ui.tiptap-button :label="__('Align center')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.align_center')"
                                         click-action="setTextAlignment('center')"
                                         is-active="isTextAligned('center')"
                     >
@@ -469,7 +469,7 @@
                         </svg>
                     </x-ui.tiptap-button>
 
-                    <x-ui.tiptap-button :label="__('Align right')"
+                    <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.align_right')"
                                         click-action="setTextAlignment('right')"
                                         is-active="isTextAligned('right')"
                     >
@@ -495,7 +495,7 @@
                             <span class="block w-px h-4 bg-gray-300 dark:bg-gray-600"></span>
                         </div>
 
-                        <x-ui.tiptap-button :label="__('Add image')"
+                        <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.add_image')"
                                             click-action="addImage()"
                                             is-active="false"
                         >
@@ -525,7 +525,7 @@
                         </div>
 
                         <!-- Таблица -->
-                        <x-ui.tiptap-button :label="__('Table')"
+                        <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.table')"
                                             :showDropdown="true"
                         >
                             <svg class="w-5 h-5"
@@ -551,7 +551,7 @@
                                                 type="button"
                                                 class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                         >
-                                            {{ __('Insert table') }}
+                                            {{ __('livewire-tiptap::tiptap.insert_table') }}
                                         </button>
                                     </li>
                                     <li>
@@ -559,7 +559,7 @@
                                                 type="button"
                                                 class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                         >
-                                            {{ __('Add column before') }}
+                                            {{ __('livewire-tiptap::tiptap.add_column_before') }}
                                         </button>
                                     </li>
                                     <li>
@@ -567,7 +567,7 @@
                                                 type="button"
                                                 class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                         >
-                                            {{ __('Add column after') }}
+                                            {{ __('livewire-tiptap::tiptap.add_column_after') }}
                                         </button>
                                     </li>
                                     <li>
@@ -575,7 +575,7 @@
                                                 type="button"
                                                 class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                         >
-                                            {{ __('Delete column') }}
+                                            {{ __('livewire-tiptap::tiptap.delete_column') }}
                                         </button>
                                     </li>
                                     <li>
@@ -583,7 +583,7 @@
                                                 type="button"
                                                 class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                         >
-                                            {{ __('Add row before') }}
+                                            {{ __('livewire-tiptap::tiptap.add_row_before') }}
                                         </button>
                                     </li>
                                     <li>
@@ -591,7 +591,7 @@
                                                 type="button"
                                                 class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                         >
-                                            {{ __('Add row after') }}
+                                            {{ __('livewire-tiptap::tiptap.add_row_after') }}
                                         </button>
                                     </li>
                                     <li>
@@ -599,7 +599,7 @@
                                                 type="button"
                                                 class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                         >
-                                            {{ __('Delete row') }}
+                                            {{ __('livewire-tiptap::tiptap.delete_row') }}
                                         </button>
                                     </li>
                                     <li>
@@ -607,7 +607,7 @@
                                                 type="button"
                                                 class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                         >
-                                            {{ __('Merge cells') }}
+                                            {{ __('livewire-tiptap::tiptap.merge_cells') }}
                                         </button>
                                     </li>
                                     <li>
@@ -615,7 +615,7 @@
                                                 type="button"
                                                 class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                         >
-                                            {{ __('Split cell') }}
+                                            {{ __('livewire-tiptap::tiptap.split_cell') }}
                                         </button>
                                     </li>
                                     <li>
@@ -623,7 +623,7 @@
                                                 type="button"
                                                 class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-gray-900 dark:hover:bg-gray-600 dark:text-white cursor-pointer"
                                         >
-                                            {{ __('Toggle header row') }}
+                                            {{ __('livewire-tiptap::tiptap.toggle_header_row') }}
                                         </button>
                                     </li>
                                     <li>
@@ -631,7 +631,7 @@
                                                 type="button"
                                                 class="flex justify-between items-center w-full text-base rounded-sm px-3 py-2 hover:bg-gray-100 text-red-600 dark:hover:bg-gray-600 dark:text-red-400 cursor-pointer"
                                         >
-                                            {{ __('Delete table') }}
+                                            {{ __('livewire-tiptap::tiptap.delete_table') }}
                                         </button>
                                     </li>
                                 </ul>
@@ -659,4 +659,3 @@
         @enderror
     @endif
 </div>
-
