@@ -2,6 +2,7 @@
 
 namespace MountainClans\LivewireTiptap;
 
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Route;
@@ -28,8 +29,15 @@ class LivewireTiptapServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
+        // На L11+ web-группа регистрирует CSRF как PreventRequestForgery,
+        // а VerifyCsrfToken стал его deprecated-подклассом — исключение только
+        // по VerifyCsrfToken там не срабатывает. Исключаем оба ради L10–L13;
+        // несуществующий на конкретной версии класс роутер просто игнорирует.
         Route::post('/tiptap/upload-image', [TiptapImagesController::class, 'upload'])
             ->name('tiptap.upload-image')
-            ->withoutMiddleware([VerifyCsrfToken::class]);;
+            ->withoutMiddleware([
+                PreventRequestForgery::class,
+                VerifyCsrfToken::class,
+            ]);
     }
 }
