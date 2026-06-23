@@ -42,7 +42,7 @@ trait HasEditorMedia
 
         // Обрабатываем картинки из поля
         foreach ($currentImagePaths as $path) {
-            if (!in_array($path, $existingPaths)) {
+            if (! in_array($path, $existingPaths)) {
                 // Ищем "висячую" запись EditorMedia без привязки к модели
                 $orphanMedia = EditorMedia::where('path', $path)
                     ->whereNull('model_type')
@@ -66,7 +66,7 @@ trait HasEditorMedia
         }
 
         $pathsToRemove = array_diff($existingPaths, $currentImagePaths);
-        if (!empty($pathsToRemove)) {
+        if (! empty($pathsToRemove)) {
             $this->editorMedia()
                 ->whereIn('path', $pathsToRemove)
                 ->get()
@@ -89,18 +89,18 @@ trait HasEditorMedia
 
         // Проходим по всем переводам (или по единственному 'default' ключу)
         foreach ($fieldValue as $content) {
-            if (!is_string($content) || empty($content)) {
+            if (! is_string($content) || empty($content)) {
                 continue;
             }
 
             // Извлекаем все src изображений
             preg_match_all('/<img[^>]+src=["\']([^"\']+)["\'][^>]*>/i', $content, $matches);
 
-            if (!empty($matches[1])) {
+            if (! empty($matches[1])) {
                 foreach ($matches[1] as $src) {
                     // Конвертируем полный URL в относительный путь
                     $relativePath = $this->convertUrlToRelativePath($src);
-                    if ($relativePath && !in_array($relativePath, $imagePaths)) {
+                    if ($relativePath && ! in_array($relativePath, $imagePaths)) {
                         $imagePaths[] = $relativePath;
                     }
                 }
@@ -113,7 +113,7 @@ trait HasEditorMedia
     /**
      * Конвертация URL изображения в относительный путь
      *
-     * @param string $url URL изображения
+     * @param  string  $url  URL изображения
      * @return string|null Относительный путь или null, если не удалось конвертировать
      */
     protected function convertUrlToRelativePath(string $url): ?string
