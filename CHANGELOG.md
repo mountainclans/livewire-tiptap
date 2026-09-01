@@ -2,6 +2,10 @@
 
 All notable changes to `livewire-tiptap` will be documented in this file.
 
+## 1.5.0 - 2026-09-01
+
+Add tools settings
+
 ## 1.4.0 - 2026-09-01
 
 Add the `tools` attribute: an explicit list of allowed formatting.
