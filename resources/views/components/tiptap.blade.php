@@ -3,11 +3,22 @@
     'height' => null,
     'withImage' => false,
     'withTable' => false,
+    // Разрешённый набор инструментов, например ['bold', 'bullet_list'].
+    // null — весь набор, как и до появления этого пропса.
+    'tools' => null,
 ])
 
 @php
     $editorId = 'tiptap-' . uniqid();
     $name = $attributes->wire('model')->value();
+
+    // Набор ограничивает и панель, и расширения редактора: спрятанная кнопка
+    // сама по себе не мешает ни горячей клавише, ни вставке из буфера.
+    $tools = is_array($tools) ? array_values($tools) : null;
+    $allows = fn (string $tool): bool => $tools === null || in_array($tool, $tools, true);
+
+    $model = $attributes->wire('model')->value();
+    $toolsArgument = $tools === null ? '' : ', ' . json_encode($tools, JSON_THROW_ON_ERROR);
 @endphp
 
 <div>
@@ -21,10 +32,10 @@
         </div>
     @endif
 
-    <div x-data="tiptap($wire.entangle('{{ $attributes->wire('model')->value() }}'))"
+    <div x-data="tiptap($wire.entangle('{{ $model }}'){{ $toolsArgument }})"
          x-init="() => init($refs.editor)"
-         data-x-template="tiptap($wire.entangle('::replace::'))"
-         data-model="{{ $attributes->wire('model')->value() }}"
+         data-x-template="tiptap($wire.entangle('::replace::'){{ $toolsArgument }})"
+         data-model="{{ $model }}"
          wire:ignore
          {{ $attributes->whereDoesntStartWith('wire:model') }}
          class="w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600"
@@ -34,6 +45,7 @@
             <div class="flex flex-wrap items-center">
                 <div class="flex items-center space-x-1 rtl:space-x-reverse flex-wrap">
 
+                    @if ($allows('bold'))
                     <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.bold')"
                                         click-action="toggleBold()"
                                         is-active="isActive('bold', updatedAt)"
@@ -50,7 +62,9 @@
                             <path d="M8 5h4.5a3.5 3.5 0 1 1 0 7H8m0-7v7m0-7H6m2 7h6.5a3.5 3.5 0 1 1 0 7H8m0-7v7m0 0H6"/>
                         </svg>
                     </x-ui.tiptap-button>
+                    @endif
 
+                    @if ($allows('italic'))
                     <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.italic')"
                                         click-action="toggleItalic()"
                                         is-active="isActive('italic', updatedAt)"
@@ -71,7 +85,9 @@
                             />
                         </svg>
                     </x-ui.tiptap-button>
+                    @endif
 
+                    @if ($allows('underline'))
                     <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.underline')"
                                         click-action="toggleUnderline()"
                                         is-active="isActive('underline', updatedAt)"
@@ -91,7 +107,9 @@
                             />
                         </svg>
                     </x-ui.tiptap-button>
+                    @endif
 
+                    @if ($allows('strike'))
                     <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.strike')"
                                         click-action="toggleStrike()"
                                         is-active="isActive('strike', updatedAt)"
@@ -112,7 +130,9 @@
                             />
                         </svg>
                     </x-ui.tiptap-button>
+                    @endif
 
+                    @if ($allows('link'))
                     <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.link')"
                                         click-action="addLink()"
                                         is-active="false"
@@ -153,7 +173,9 @@
                             />
                         </svg>
                     </x-ui.tiptap-button>
+                    @endif
 
+                    @if ($allows('bullet_list'))
                     <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.bullet_list')"
                                         click-action="toggleBulletList()"
                                         is-active="isActive('bulletList', updatedAt)"
@@ -173,7 +195,9 @@
                             ></path>
                         </svg>
                     </x-ui.tiptap-button>
+                    @endif
 
+                    @if ($allows('ordered_list'))
                     <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.ordered_list')"
                                         click-action="toggleOrderedList()"
                                         is-active="isActive('orderedList', updatedAt)"
@@ -194,7 +218,9 @@
                             ></path>
                         </svg>
                     </x-ui.tiptap-button>
+                    @endif
 
+                    @if ($allows('blockquote'))
                     <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.blockquote')"
                                         click-action="toggleBlockquote()"
                                         is-active="isActive('blockquote', updatedAt)"
@@ -213,11 +239,15 @@
                             ></path>
                         </svg>
                     </x-ui.tiptap-button>
+                    @endif
 
+                    @if ($allows('text_size') || $allows('headings'))
                     <div class="px-1">
                         <span class="block w-px h-4 bg-gray-300 dark:bg-gray-600"></span>
                     </div>
+                    @endif
 
+                    @if ($allows('text_size'))
                     <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.text_size')"
                                         :showDropdown="true"
                                         is-active="isTextSized()"
@@ -285,7 +315,9 @@
                             </ul>
                         </x-slot>
                     </x-ui.tiptap-button>
+                    @endif
 
+                    @if ($allows('headings'))
                     <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.format')"
                                         :showDropdown="true"
                     >
@@ -422,7 +454,9 @@
                             </ul>
                         </x-slot>
                     </x-ui.tiptap-button>
+                    @endif
 
+                    @if ($allows('align'))
                     <div class="px-1">
                         <span class="block w-px h-4 bg-gray-300 dark:bg-gray-600"></span>
                     </div>
@@ -489,8 +523,9 @@
                             />
                         </svg>
                     </x-ui.tiptap-button>
+                    @endif
 
-                    @if($withImage)
+                    @if ($withImage && $allows('image'))
                         <div class="px-1">
                             <span class="block w-px h-4 bg-gray-300 dark:bg-gray-600"></span>
                         </div>
@@ -519,7 +554,7 @@
                         </x-ui.tiptap-button>
                     @endif
 
-                    @if($withTable)
+                    @if ($withTable && $allows('table'))
                         <div class="px-1">
                             <span class="block w-px h-4 bg-gray-300 dark:bg-gray-600"></span>
                         </div>

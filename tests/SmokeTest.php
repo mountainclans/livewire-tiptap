@@ -40,3 +40,41 @@ it('renders the x-ui.tiptap component', function () {
         ->toContain('Content')
         ->toContain('tiptap-');
 });
+
+it('renders the whole toolbar and passes no tools argument when tools are not given', function () {
+    $html = Blade::render('<x-ui.tiptap label="Content" wire:model="content" />');
+
+    expect($html)
+        ->toContain('tiptap($wire.entangle(\'content\'))')
+        ->toContain('toggleBold()')
+        ->toContain('toggleItalic()')
+        ->toContain('toggleBulletList()')
+        ->toContain('setTextAlignment');
+});
+
+it('keeps only the allowed tools in the toolbar and hands the list to the editor', function () {
+    $html = Blade::render(
+        '<x-ui.tiptap label="Content" wire:model="content" :tools="[\'bold\', \'bullet_list\']" />'
+    );
+
+    // Набор уезжает в редактор: он гасит расширения, а не только кнопки
+    expect(html_entity_decode($html))
+        ->toContain('tiptap($wire.entangle(\'content\'), ["bold","bullet_list"])')
+        ->toContain('toggleBold()')
+        ->toContain('toggleBulletList()')
+        ->not->toContain('toggleItalic()')
+        ->not->toContain('toggleOrderedList()')
+        ->not->toContain('setTextAlignment');
+});
+
+it('hides the image button when the tools list omits it', function () {
+    $withImage = Blade::render(
+        '<x-ui.tiptap label="Content" wire:model="content" :with-image="true" :tools="[\'bold\', \'image\']" />'
+    );
+    $withoutImage = Blade::render(
+        '<x-ui.tiptap label="Content" wire:model="content" :with-image="true" :tools="[\'bold\']" />'
+    );
+
+    expect($withImage)->toContain('addImage()')
+        ->and($withoutImage)->not->toContain('addImage()');
+});

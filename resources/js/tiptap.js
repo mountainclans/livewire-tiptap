@@ -6,7 +6,7 @@ import {Color} from '@tiptap/extension-color';
 import {ImageUploadPlaceholder} from './elements/_tiptap-upload-image'
 import {ConfiguredLink} from './elements/_tiptap-configured-link.js'
 import {ConfiguredBold} from "./elements/_tiptap-configured-bold.js";
-import {ConfiguredStarterKit} from "./elements/_tiptap-configured-starter-kit.js";
+import {ConfiguredStarterKit, configuredStarterKit} from "./elements/_tiptap-configured-starter-kit.js";
 import {ConfiguredTextStyle} from "./elements/_tiptap-configured-text-style.js";
 import {ConfiguredTextAlign} from "./elements/_tiptap-configured-text-align.js";
 import {CustomInlineImage} from "./elements/_tiptap-image-node.js";
@@ -18,7 +18,92 @@ import {
     ConfiguredTableCell
 } from "./elements/_tiptap-configured-table.js";
 
-export default function tiptap(content){
+/** Узлы StarterKit, которыми управляет набор инструментов. */
+const STARTER_KIT_NODES = {
+    italic: 'italic',
+    strike: 'strike',
+    blockquote: 'blockquote',
+    heading: 'headings',
+    bulletList: 'bullet_list',
+    orderedList: 'ordered_list',
+};
+
+/**
+ * Расширения под разрешённый набор инструментов. tools === null — режим
+ * совместимости: включено всё, как было до появления набора, поэтому
+ * у давних полей ничего не вырезается при открытии.
+ */
+function buildExtensions(tools) {
+    if (tools === null) {
+        return [
+            Color,
+            FontFamily,
+            Highlight,
+            Underline,
+            ConfiguredStarterKit,
+            ConfiguredBold,
+            ConfiguredTextStyle,
+            ConfiguredLink,
+            ConfiguredTextAlign,
+            ImageUploadPlaceholder,
+            CustomInlineImage,
+            TableWrapper,
+            ConfiguredTable,
+            ConfiguredTableRow,
+            ConfiguredTableHeader,
+            ConfiguredTableCell,
+        ];
+    }
+
+    const allows = (tool) => tools.includes(tool);
+
+    const disabled = {};
+    Object.entries(STARTER_KIT_NODES).forEach(([node, tool]) => {
+        if (!allows(tool)) {
+            disabled[node] = false;
+        }
+    });
+
+    // Пункт списка нужен любому из двух списков и мешает, когда нет обоих
+    if (!allows('bullet_list') && !allows('ordered_list')) {
+        disabled.listItem = false;
+    }
+
+    const extensions = [configuredStarterKit(disabled)];
+
+    if (allows('bold')) {
+        extensions.push(ConfiguredBold);
+    }
+
+    if (allows('underline')) {
+        extensions.push(Underline);
+    }
+
+    if (allows('link')) {
+        extensions.push(ConfiguredLink);
+    }
+
+    if (allows('align')) {
+        extensions.push(ConfiguredTextAlign);
+    }
+
+    // Размер текста — атрибут марки textStyle; цвет и шрифт держатся на ней же
+    if (allows('text_size')) {
+        extensions.push(ConfiguredTextStyle, Color, FontFamily, Highlight);
+    }
+
+    if (allows('image')) {
+        extensions.push(ImageUploadPlaceholder, CustomInlineImage);
+    }
+
+    if (allows('table')) {
+        extensions.push(TableWrapper, ConfiguredTable, ConfiguredTableRow, ConfiguredTableHeader, ConfiguredTableCell);
+    }
+
+    return extensions;
+}
+
+export default function tiptap(content, tools = null){
     let editor;
 
     return {
@@ -30,24 +115,7 @@ export default function tiptap(content){
 
             editor = new Editor({
                 element: element,
-                extensions: [
-                    Color,
-                    FontFamily,
-                    Highlight,
-                    Underline,
-                    ConfiguredStarterKit,
-                    ConfiguredBold,
-                    ConfiguredTextStyle,
-                    ConfiguredLink,
-                    ConfiguredTextAlign,
-                    ImageUploadPlaceholder,
-                    CustomInlineImage,
-                    TableWrapper,
-                    ConfiguredTable,
-                    ConfiguredTableRow,
-                    ConfiguredTableHeader,
-                    ConfiguredTableCell,
-                ],
+                extensions: buildExtensions(Array.isArray(tools) ? tools : null),
                 content: this.content,
                 editorProps: {
                     attributes: {

@@ -98,6 +98,28 @@ php artisan vendor:publish --tag="livewire-tiptap-views"
 
 Используйте атрибут `translatable`, если Вы хотите использовать компонент как [translatable поле](https://github.com/mountainclans/livewire-translatable).
 
+### Разрешённые инструменты
+
+По умолчанию доступна вся панель. Атрибут `tools` ограничивает её явным списком:
+
+```bladehtml
+<x-ui.tiptap wire:model="description"
+             :tools="['bold', 'bullet_list', 'ordered_list']"
+             label="{{ __('Description') }}"
+/>
+```
+
+Набор управляет не только панелью, но и расширениями редактора: спрятанная
+кнопка сама по себе не мешает ни горячей клавише, ни вставке из буфера,
+поэтому неразрешённое форматирование выбрасывается схемой при вводе и вставке.
+
+Ключи: `bold`, `italic`, `underline`, `strike`, `link`, `bullet_list`,
+`ordered_list`, `blockquote`, `headings`, `text_size`, `align`, `image`, `table`.
+
+Без `tools` поведение прежнее — включено всё, поэтому старые поля при открытии
+ничего не теряют. Если `tools` задан, `image` и `table` показываются только
+когда есть и соответствующий ключ, и `with-image` / `with-table`.
+
 ### Настройка модели для обработки изображений
 Если Вы заливаете картинки в контент текстового редактора, необходимо настроить их обработку в модели.
 
