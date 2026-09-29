@@ -2,10 +2,6 @@
 
 All notable changes to `livewire-tiptap` will be documented in this file.
 
-## 1.6.0 - 2026-09-29
-
-Support Livewire 4
-
 ## 1.7.0 - 2026-09-29
 
 Add the `shortcodes` attribute: an arbitrary set of `[code]` markers defined by
@@ -20,6 +16,10 @@ typed; on the way back the text passes through the editor schema.
 Fix the toolbar tooltip jumping sideways at the end of its fade-in.
 
 Without the new attributes the behaviour is unchanged.
+
+## 1.6.0 - 2026-09-29
+
+Support Livewire 4
 
 ## 1.5.0 - 2026-09-01
 
