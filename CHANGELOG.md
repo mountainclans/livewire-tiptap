@@ -2,6 +2,23 @@
 
 All notable changes to `livewire-tiptap` will be documented in this file.
 
+## 1.8.0 - 2026-09-29
+
+Add paired shortcodes: the `pair` kind wraps text, `[hl]word[/hl]`. In the
+editor it is a mark toggled from the toolbar; in the saved HTML it stays plain
+text.
+
+Add the `color` key: a shortcode is painted with one of the palette colours
+(`gray`, `green`, `yellow`, `blue`, `red`, `purple`) in both themes. An inline
+chip now shows only its code, the label moved to the tooltip.
+
+Add the `single-line` attribute: an editor in place of a text input. One line
+without formatting that stores plain text with shortcodes instead of HTML, so
+a text field can be switched to the editor without touching the data or the
+code that renders it.
+
+Without the new attributes and keys the behaviour is unchanged.
+
 ## 1.7.0 - 2026-09-29
 
 Add the `shortcodes` attribute: an arbitrary set of `[code]` markers defined by
