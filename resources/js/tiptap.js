@@ -17,6 +17,13 @@ import {
     ConfiguredTableHeader,
     ConfiguredTableCell
 } from "./elements/_tiptap-configured-table.js";
+import {
+    normalizeShortcodes,
+    shortcodeExtensions,
+    shortcodeNodeName,
+    shortcodesFromEditor,
+    shortcodesToEditor,
+} from "./elements/_tiptap-shortcodes.js";
 
 /** Узлы StarterKit, которыми управляет набор инструментов. */
 const STARTER_KIT_NODES = {
@@ -103,8 +110,11 @@ function buildExtensions(tools) {
     return extensions;
 }
 
-export default function tiptap(content, tools = null){
+export default function tiptap(content, tools = null, shortcodes = []){
     let editor;
+
+    // В content метки лежат текстом, как в базе; плашками они становятся только внутри редактора
+    const codes = normalizeShortcodes(shortcodes);
 
     return {
         content: content,
@@ -115,8 +125,11 @@ export default function tiptap(content, tools = null){
 
             editor = new Editor({
                 element: element,
-                extensions: buildExtensions(Array.isArray(tools) ? tools : null),
-                content: this.content,
+                extensions: [
+                    ...buildExtensions(Array.isArray(tools) ? tools : null),
+                    ...shortcodeExtensions(codes),
+                ],
+                content: shortcodesToEditor(this.content, codes),
                 editorProps: {
                     attributes: {
                         class: 'format dark:format-invert focus:!outline-none format-blue max-w-none',
@@ -127,8 +140,7 @@ export default function tiptap(content, tools = null){
                 },
                 onUpdate: ({editor}) => {
                     _this.updatedAt = Date.now()
-                    this.content = editor.getHTML();
-
+                    this.content = shortcodesFromEditor(editor.getHTML());
                 },
                 onSelectionUpdate({ editor }) {
                     _this.updatedAt = Date.now()
@@ -136,11 +148,11 @@ export default function tiptap(content, tools = null){
             })
 
             this.$watch('content', (content) => {
-                if (content === editor.getHTML()) {
+                if (content === shortcodesFromEditor(editor.getHTML())) {
                     return;
                 }
 
-                editor.commands.setContent(content, false)
+                editor.commands.setContent(shortcodesToEditor(content, codes), false)
             })
         },
 
@@ -345,6 +357,22 @@ export default function tiptap(content, tools = null){
 
         toggleHeaderCell() {
             editor?.chain().focus().toggleHeaderCell().run();
+        },
+
+        insertShortcode(code) {
+            const shortcode = codes.find((candidate) => candidate.code === code);
+
+            if (!shortcode) {
+                return;
+            }
+
+            editor?.chain()
+                .focus()
+                .insertContent({
+                    type: shortcodeNodeName(shortcode.kind),
+                    attrs: {code},
+                })
+                .run();
         },
 
         // Проверка состояний

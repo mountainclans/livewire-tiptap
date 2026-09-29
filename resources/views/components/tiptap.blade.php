@@ -6,7 +6,12 @@
     // Разрешённый набор инструментов, например ['bold', 'bullet_list'].
     // null — весь набор, как и до появления этого пропса.
     'tools' => null,
+    // Шорткоды — служебные метки вида [code], которые разбирает сайт:
+    // [['code' => 'CUT', 'label' => 'Под кат', 'kind' => 'block', 'hint' => '…'], …]
+    'shortcodes' => [],
 ])
+
+@use('MountainClans\LivewireTiptap\Support\Shortcodes')
 
 @php
     $editorId = 'tiptap-' . uniqid();
@@ -18,7 +23,15 @@
     $allows = fn (string $tool): bool => $tools === null || in_array($tool, $tools, true);
 
     $model = $attributes->wire('model')->value();
-    $toolsArgument = $tools === null ? '' : ', ' . json_encode($tools, JSON_THROW_ON_ERROR);
+    $shortcodes = Shortcodes::normalize($shortcodes);
+
+    // Лишних аргументов редактору не передаём: без набора и шорткодов вызов прежний
+    $editorArguments = match (true) {
+        $shortcodes !== [] => ', ' . json_encode($tools, JSON_THROW_ON_ERROR)
+            . ', ' . json_encode($shortcodes, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
+        $tools !== null => ', ' . json_encode($tools, JSON_THROW_ON_ERROR),
+        default => '',
+    };
 @endphp
 
 <div>
@@ -32,9 +45,9 @@
         </div>
     @endif
 
-    <div x-data="tiptap($wire.entangle('{{ $model }}'){{ $toolsArgument }})"
+    <div x-data="tiptap($wire.entangle('{{ $model }}'){{ $editorArguments }})"
          x-init="() => init($refs.editor)"
-         data-x-template="tiptap($wire.entangle('::replace::'){{ $toolsArgument }})"
+         data-x-template="tiptap($wire.entangle('::replace::'){{ $editorArguments }})"
          data-model="{{ $model }}"
          wire:ignore
          {{ $attributes->whereDoesntStartWith('wire:model') }}
@@ -673,6 +686,16 @@
                             </x-slot>
                         </x-ui.tiptap-button>
                     @endif
+
+                    @foreach ($shortcodes as $shortcode)
+                        <x-ui.tiptap-button :label="$shortcode['hint']"
+                                            click-action="insertShortcode('{{ $shortcode['code'] }}')"
+                        >
+                            <span class="block px-1 font-mono text-xs font-semibold leading-5 whitespace-nowrap">
+                                [{{ $shortcode['code'] }}]
+                            </span>
+                        </x-ui.tiptap-button>
+                    @endforeach
 
                 </div>
             </div>
