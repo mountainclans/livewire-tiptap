@@ -25,13 +25,14 @@
         {{ $slot }}
     </button>
 
-    {{-- Tooltip --}}
-    <div x-show="showTooltip"
-         x-transition.opacity
-         class="absolute z-10 px-3 py-2 text-sm text-white font-medium bg-gray-900 rounded shadow top-10 left-1/2 transform -translate-x-1/2 transition-opacity"
-         style="white-space: nowrap;"
-    >
-        {{ $label }}
+    {{-- Tooltip: по центру его держит обёртка — анимация на время проявления затирает transform самого элемента --}}
+    <div class="absolute z-10 top-10 left-1/2 -translate-x-1/2 pointer-events-none">
+        <div x-show="showTooltip"
+             x-transition.opacity
+             class="px-3 py-2 text-sm text-white font-medium bg-gray-900 rounded shadow whitespace-nowrap"
+        >
+            {{ $label }}
+        </div>
     </div>
 
     {{-- Dropdown (дополнительный слот) --}}
