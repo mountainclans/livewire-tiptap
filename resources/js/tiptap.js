@@ -18,8 +18,10 @@ import {
     ConfiguredTableCell
 } from "./elements/_tiptap-configured-table.js";
 import {
+    isPair,
     normalizeShortcodes,
     shortcodeExtensions,
+    shortcodeMarkName,
     shortcodeNodeName,
     shortcodesFromEditor,
     shortcodesToEditor,
@@ -407,10 +409,17 @@ export default function tiptap(content, tools = null, shortcodes = []){
             }
         },
 
+        // Одиночная метка вставляется в текст, парная включается и выключается на выделении
         insertShortcode(code) {
             const shortcode = codes.find((candidate) => candidate.code === code);
 
             if (!shortcode) {
+                return;
+            }
+
+            if (isPair(shortcode)) {
+                editor?.chain().focus().toggleMark(shortcodeMarkName(code)).run();
+
                 return;
             }
 
@@ -421,6 +430,10 @@ export default function tiptap(content, tools = null, shortcodes = []){
                     attrs: {code},
                 })
                 .run();
+        },
+
+        isShortcodeActive(code) {
+            return editor?.isActive(shortcodeMarkName(code), {}, this.updatedAt) || false;
         },
 
         // Проверка состояний

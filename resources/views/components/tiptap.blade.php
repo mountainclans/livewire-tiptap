@@ -10,6 +10,7 @@
     'tools' => null,
     // Шорткоды — служебные метки вида [code], которые разбирает сайт:
     // [['code' => 'CUT', 'label' => 'Под кат', 'kind' => 'block', 'hint' => '…'], …]
+    // kind: block — отдельной строкой, inline — в строке, pair — [code]…[/code] вокруг текста
     'shortcodes' => [],
 ])
 
@@ -694,6 +695,9 @@
                     @foreach ($shortcodes as $shortcode)
                         <x-ui.tiptap-button :label="$shortcode['hint']"
                                             click-action="insertShortcode('{{ $shortcode['code'] }}')"
+                                            :is-active="$shortcode['kind'] === Shortcodes::KIND_PAIR
+                                                ? 'isShortcodeActive(\'' . $shortcode['code'] . '\')'
+                                                : 'false'"
                         >
                             <span class="block px-1 font-mono text-xs font-semibold leading-5 whitespace-nowrap">
                                 [{{ $shortcode['code'] }}]

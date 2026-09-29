@@ -1,12 +1,19 @@
-import {Node, mergeAttributes, nodeInputRule} from '@tiptap/core';
+import {Mark, Node, markInputRule, mergeAttributes, nodeInputRule} from '@tiptap/core';
 
 /**
  * Шорткод — служебная метка вида [code], которую разбирает сайт, а не редактор.
  * В сохранённом HTML она остаётся текстом. В редакторе метка показана неделимой плашкой
  * с самим кодом и подписью: её нельзя испортить набором или оформлением,
  * а блочная не может оказаться посреди абзаца.
+ * Парная метка [code]…[/code] обнимает текст: в редакторе это выделение с кнопкой в панели.
  * Набор кодов приходит снаружи, пакет не знает ни одного заранее.
  */
+const PAIR = 'pair';
+
+// Цвет метки задаёт приложение; сами цвета — в tiptap.css
+const COLORS = ['gray', 'green', 'yellow', 'blue', 'red', 'purple'];
+
+// Виды, которые в редакторе становятся узлами; парная метка — не узел, а выделение текста
 const KINDS = {
     block: {
         name: 'shortcodeBlock',
@@ -33,25 +40,76 @@ export function normalizeShortcodes(shortcodes) {
             code: shortcode.code,
             // Подпись, повторяющая саму метку, на плашке не нужна
             label: shortcode.label && shortcode.label !== `[${shortcode.code}]` ? shortcode.label : null,
-            kind: KINDS[shortcode.kind] ? shortcode.kind : 'inline',
+            kind: KINDS[shortcode.kind] || shortcode.kind === PAIR ? shortcode.kind : 'inline',
+            color: COLORS.includes(shortcode.color) ? shortcode.color : null,
         }));
 }
 
-/** Узлы редактора: по одному на каждый вид, для которого есть хотя бы один код. */
+/** Расширения редактора: узел на каждый вид меток и выделение на каждую парную метку. */
 export function shortcodeExtensions(shortcodes) {
-    return Object.keys(KINDS)
+    const nodes = Object.keys(KINDS)
         .map((kind) => [kind, shortcodes.filter((shortcode) => shortcode.kind === kind)])
         .filter(([, ofKind]) => ofKind.length > 0)
         .map(([kind, ofKind]) => shortcodeNode(kind, ofKind));
+
+    return [
+        ...nodes,
+        ...shortcodes.filter(isPair).map(shortcodeMark),
+    ];
 }
 
 export function shortcodeNodeName(kind) {
     return KINDS[kind].name;
 }
 
+export function shortcodeMarkName(code) {
+    return `shortcodePair_${code}`;
+}
+
+export function isPair(shortcode) {
+    return shortcode.kind === PAIR;
+}
+
+/**
+ * У каждой парной метки своё выделение: одно общее не дало бы вложить [c] в [hl].
+ * Приоритет выше обычного оформления, чтобы метка обнимала жирный и курсив снаружи
+ * и в сохранённом тексте не рвалась на куски.
+ */
+function shortcodeMark(shortcode) {
+    const {code, color, label} = shortcode;
+
+    return Mark.create({
+        name: shortcodeMarkName(code),
+        priority: 1000,
+
+        parseHTML() {
+            return [{tag: `span[data-shortcode="${code}"][data-kind="${PAIR}"]`}];
+        },
+
+        renderHTML({HTMLAttributes}) {
+            return ['span', mergeAttributes(HTMLAttributes, {
+                'data-shortcode': code,
+                'data-kind': PAIR,
+                'data-color': color,
+                title: label,
+                class: 'tiptap-shortcode-pair',
+            }), 0];
+        },
+
+        // Пара, набранная руками, сразу становится выделением
+        addInputRules() {
+            return [markInputRule({
+                find: new RegExp(`(?:\\[${code}\\])([^\\[\\]]+)(?:\\[/${code}\\])$`),
+                type: this.type,
+            })];
+        },
+    });
+}
+
 function shortcodeNode(kind, shortcodes) {
     const {name, tag} = KINDS[kind];
     const labels = new Map(shortcodes.map((shortcode) => [shortcode.code, shortcode.label]));
+    const colors = new Map(shortcodes.map((shortcode) => [shortcode.code, shortcode.color]));
 
     return Node.create({
         name,
@@ -82,6 +140,8 @@ function shortcodeNode(kind, shortcodes) {
             return [tag, mergeAttributes(HTMLAttributes, {
                 'data-kind': kind,
                 'data-label': labels.get(node.attrs.code),
+                'data-color': colors.get(node.attrs.code),
+                title: labels.get(node.attrs.code),
                 class: `tiptap-shortcode tiptap-shortcode-${kind}`,
             })];
         },
@@ -107,11 +167,16 @@ export function shortcodesToEditor(html, shortcodes) {
         return html;
     }
 
-    const template = parse(html);
-    const kinds = new Map(shortcodes.map((shortcode) => [shortcode.code, shortcode.kind]));
-    const pattern = new RegExp(`\\[(${shortcodes.map((shortcode) => shortcode.code).join('|')})\\]`);
+    // Пара обнимает разметку, поэтому ищется по строке; одиночные метки — по текстовым узлам
+    const template = parse(wrapPairs(html, shortcodes.filter(isPair)));
+    const single = shortcodes.filter((shortcode) => !isPair(shortcode));
 
-    textNodes(template).forEach((text) => replaceMarkers(text, pattern, kinds));
+    if (single.length > 0) {
+        const kinds = new Map(single.map((shortcode) => [shortcode.code, shortcode.kind]));
+        const pattern = new RegExp(`\\[(${single.map((shortcode) => shortcode.code).join('|')})\\]`);
+
+        textNodes(template).forEach((text) => replaceMarkers(text, pattern, kinds));
+    }
 
     template.content
         .querySelectorAll('[data-shortcode][data-kind="block"]')
@@ -128,11 +193,31 @@ export function shortcodesFromEditor(html) {
 
     const template = parse(html);
 
+    // Пары разворачиваются изнутри наружу: вложенная к этому моменту уже стала текстом
+    [...template.content.querySelectorAll(`[data-shortcode][data-kind="${PAIR}"]`)]
+        .reverse()
+        .forEach((element) => {
+            const code = element.getAttribute('data-shortcode');
+
+            element.replaceWith(`[${code}]`, ...element.childNodes, `[/${code}]`);
+        });
+
     template.content
         .querySelectorAll('[data-shortcode]')
         .forEach((element) => element.replaceWith(`[${element.getAttribute('data-shortcode')}]`));
 
     return template.innerHTML;
+}
+
+/** Открывающая и закрывающая метки становятся обёрткой; метка без пары остаётся текстом. */
+function wrapPairs(html, pairs) {
+    return pairs.reduce(
+        (wrapped, {code}) => wrapped.replace(
+            new RegExp(`\\[${code}\\]([\\s\\S]*?)\\[/${code}\\]`, 'g'),
+            `<span data-shortcode="${code}" data-kind="${PAIR}">$1</span>`,
+        ),
+        html,
+    );
 }
 
 // template держит разметку в неактивном документе: картинки не грузятся, обработчики не срабатывают

@@ -16,9 +16,22 @@ final class Shortcodes
     /** Метка стоит внутри строки, как символ. */
     public const KIND_INLINE = 'inline';
 
+    /** Парная метка [code]…[/code] обнимает текст. */
+    public const KIND_PAIR = 'pair';
+
+    /** Цвета, в которые редактор умеет красить метку. */
+    public const COLORS = [
+        'gray',
+        'green',
+        'yellow',
+        'blue',
+        'red',
+        'purple',
+    ];
+
     /**
-     * @param  array<int, array{code: string, label?: string, kind?: string, hint?: string}>  $definitions
-     * @return list<array{code: string, label: string, kind: string, hint: string}>
+     * @param  array<int, array{code: string, label?: string, kind?: string, hint?: string, color?: string}>  $definitions
+     * @return list<array{code: string, label: string, kind: string, hint: string, color: string}>
      */
     public static function normalize(array $definitions): array
     {
@@ -32,8 +45,15 @@ final class Shortcodes
                 throw new InvalidArgumentException("Shortcode code [{$code}] may contain only latin letters, digits, underscore and hyphen.");
             }
 
-            if (! in_array($kind, [self::KIND_BLOCK, self::KIND_INLINE], true)) {
+            if (! in_array($kind, [self::KIND_BLOCK, self::KIND_INLINE, self::KIND_PAIR], true)) {
                 throw new InvalidArgumentException("Shortcode [{$code}] has unknown kind [{$kind}].");
+            }
+
+            // Парная метка подсвечивает текст, поэтому без указаний она жёлтая, как маркер
+            $color = (string) ($definition['color'] ?? ($kind === self::KIND_PAIR ? 'yellow' : 'gray'));
+
+            if (! in_array($color, self::COLORS, true)) {
+                throw new InvalidArgumentException("Shortcode [{$code}] has unknown color [{$color}].");
             }
 
             if (isset($shortcodes[$code])) {
@@ -47,6 +67,7 @@ final class Shortcodes
                 'label' => $label,
                 'kind' => $kind,
                 'hint' => (string) ($definition['hint'] ?? $label),
+                'color' => $color,
             ];
         }
 
