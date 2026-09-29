@@ -3,6 +3,8 @@
     'height' => null,
     'withImage' => false,
     'withTable' => false,
+    // Кнопка «HTML»: вместо редактора показывает исходный код поля, его можно править руками
+    'withHtml' => false,
     // Разрешённый набор инструментов, например ['bold', 'bullet_list'].
     // null — весь набор, как и до появления этого пропса.
     'tools' => null,
@@ -55,8 +57,10 @@
     >
         {{-- BUTTONS --}}
         <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-600">
-            <div class="flex flex-wrap items-center">
-                <div class="flex items-center space-x-1 rtl:space-x-reverse flex-wrap">
+            <div class="flex items-start justify-between gap-2">
+                <div class="flex items-center space-x-1 rtl:space-x-reverse flex-wrap"
+                     @if ($withHtml) x-bind:class="sourceMode && 'opacity-40 pointer-events-none'" @endif
+                >
 
                     @if ($allows('bold'))
                     <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.bold')"
@@ -698,12 +702,38 @@
                     @endforeach
 
                 </div>
+
+                @if ($withHtml)
+                    <div class="shrink-0">
+                        <x-ui.tiptap-button :label="__('livewire-tiptap::tiptap.html_mode')"
+                                            click-action="toggleSource()"
+                                            is-active="sourceMode"
+                        >
+                            <span class="block px-1 font-mono text-xs font-semibold leading-5 whitespace-nowrap">
+                                HTML
+                            </span>
+                        </x-ui.tiptap-button>
+                    </div>
+                @endif
             </div>
         </div>
 
         {{-- EDITOR --}}
         <div class="px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
+            @if ($withHtml)
+                <textarea x-show="sourceMode"
+                          x-cloak
+                          x-model="source"
+                          x-on:input="updateSource()"
+                          spellcheck="false"
+                          aria-label="{{ __('livewire-tiptap::tiptap.html_mode') }}"
+                          class="block w-full min-h-40 p-0 font-mono text-sm leading-6 text-gray-800 bg-white border-0 resize-y dark:bg-gray-800 dark:text-white focus:ring-0 focus:outline-none"
+                          style="@if($height)height: {{ $height }}px;@endif"
+                ></textarea>
+            @endif
+
             <div x-ref="editor"
+                 @if ($withHtml) x-show="!sourceMode" @endif
                  id="{{ $editorId }}"
                  class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:border-none overflow-y-auto"
                  style="font-size: 16px; @if($height)height: {{ $height }}px;@endif"

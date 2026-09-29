@@ -24,6 +24,7 @@ import {
     shortcodesFromEditor,
     shortcodesToEditor,
 } from "./elements/_tiptap-shortcodes.js";
+import {formatSource} from "./elements/_tiptap-source.js";
 
 /** Узлы StarterKit, которыми управляет набор инструментов. */
 const STARTER_KIT_NODES = {
@@ -120,6 +121,11 @@ export default function tiptap(content, tools = null, shortcodes = []){
         content: content,
         updatedAt: Date.now(),
 
+        // Режим исходного кода: вместо редактора поле с HTML, как он лежит в базе
+        sourceMode: false,
+        source: '',
+        sourceChanged: false,
+
         init(element) {
             const _this = this;
 
@@ -148,6 +154,13 @@ export default function tiptap(content, tools = null, shortcodes = []){
             })
 
             this.$watch('content', (content) => {
+                // В режиме кода редактор получит текст целиком при возврате
+                if (this.sourceMode) {
+                    this.showOuterChange(content);
+
+                    return;
+                }
+
                 if (content === shortcodesFromEditor(editor.getHTML())) {
                     return;
                 }
@@ -357,6 +370,41 @@ export default function tiptap(content, tools = null, shortcodes = []){
 
         toggleHeaderCell() {
             editor?.chain().focus().toggleHeaderCell().run();
+        },
+
+        toggleSource() {
+            if (!this.sourceMode) {
+                this.source = formatSource(this.content);
+                this.sourceChanged = false;
+                this.sourceMode = true;
+
+                return;
+            }
+
+            this.sourceMode = false;
+
+            // Без правок значение поля не трогаем: иначе простой просмотр кода менял бы текст
+            if (!this.sourceChanged) {
+                return;
+            }
+
+            editor.commands.setContent(shortcodesToEditor(this.content, codes), false);
+
+            // Редактор принял только ту разметку, которую умеет: поле хранит то, что видно
+            this.content = shortcodesFromEditor(editor.getHTML());
+        },
+
+        updateSource() {
+            this.sourceChanged = true;
+            this.content = this.source;
+        },
+
+        // Значение поменяли снаружи, пока открыт код: показываем новое
+        showOuterChange(content) {
+            if (content !== this.source) {
+                this.source = formatSource(content);
+                this.sourceChanged = true;
+            }
         },
 
         insertShortcode(code) {

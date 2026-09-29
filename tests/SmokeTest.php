@@ -78,3 +78,24 @@ it('hides the image button when the tools list omits it', function () {
     expect($withImage)->toContain('addImage()')
         ->and($withoutImage)->not->toContain('addImage()');
 });
+
+it('has no source mode unless asked for', function () {
+    $html = Blade::render('<x-ui.tiptap label="Content" wire:model="content" />');
+
+    expect($html)
+        ->not->toContain('toggleSource()')
+        ->not->toContain('<textarea')
+        ->not->toContain('sourceMode');
+});
+
+it('adds the source mode button and field with the with-html attribute', function () {
+    $html = Blade::render('<x-ui.tiptap label="Content" wire:model="content" with-html height="300" />');
+
+    expect($html)
+        ->toContain('toggleSource()')
+        ->toContain('x-model="source"')
+        ->toContain('x-show="!sourceMode"')
+        ->toContain('height: 300px;')
+        // Аргументы редактора от режима кода не зависят
+        ->toContain('tiptap($wire.entangle(\'content\'))');
+});

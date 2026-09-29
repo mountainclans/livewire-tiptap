@@ -23,6 +23,11 @@
     min-height: 100%;
 }
 
+/* Поле исходного кода не мелькает до запуска Alpine */
+[x-cloak] {
+    display: none !important;
+}
+
 /* Шорткоды: на плашке сама метка, как она лежит в тексте, и подпись из data-label */
 .tiptap-shortcode {
     border: 1px dashed #9ca3af;

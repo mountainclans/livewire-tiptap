@@ -11,6 +11,7 @@ return [
     'bullet_list' => 'Bullet list',
     'ordered_list' => 'Ordered list',
     'blockquote' => 'Blockquote',
+    'html_mode' => 'Source code',
 
     // Text size
     'text_size' => 'Text size',
