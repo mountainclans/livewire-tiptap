@@ -5,6 +5,8 @@
     'withTable' => false,
     // Кнопка «HTML»: вместо редактора показывает исходный код поля, его можно править руками
     'withHtml' => false,
+    // Одна строка без оформления; в поле уходит текст с шорткодами, а не разметка
+    'singleLine' => false,
     // Разрешённый набор инструментов, например ['bold', 'bullet_list'].
     // null — весь набор, как и до появления этого пропса.
     'tools' => null,
@@ -22,19 +24,29 @@
 
     // Набор ограничивает и панель, и расширения редактора: спрятанная кнопка
     // сама по себе не мешает ни горячей клавише, ни вставке из буфера.
-    $tools = is_array($tools) ? array_values($tools) : null;
+    // В одной строке оформлению нет места: набор пуст, какой бы ни передали
+    $tools = match (true) {
+        $singleLine => [],
+        is_array($tools) => array_values($tools),
+        default => null,
+    };
     $allows = fn (string $tool): bool => $tools === null || in_array($tool, $tools, true);
 
     $model = $attributes->wire('model')->value();
-    $shortcodes = Shortcodes::normalize($shortcodes);
+    $shortcodes = Shortcodes::normalize($shortcodes, $singleLine);
+
+    $toolsJson = json_encode($tools, JSON_THROW_ON_ERROR);
+    $shortcodesJson = json_encode($shortcodes, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
 
     // Лишних аргументов редактору не передаём: без набора и шорткодов вызов прежний
     $editorArguments = match (true) {
-        $shortcodes !== [] => ', ' . json_encode($tools, JSON_THROW_ON_ERROR)
-            . ', ' . json_encode($shortcodes, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
-        $tools !== null => ', ' . json_encode($tools, JSON_THROW_ON_ERROR),
+        $singleLine => ", {$toolsJson}, {$shortcodesJson}, " . json_encode(['singleLine' => true], JSON_THROW_ON_ERROR),
+        $shortcodes !== [] => ", {$toolsJson}, {$shortcodesJson}",
+        $tools !== null => ", {$toolsJson}",
         default => '',
     };
+
+    $hasToolbar = ! $singleLine || $shortcodes !== [] || $withHtml;
 @endphp
 
 <div>
@@ -54,10 +66,19 @@
          data-model="{{ $model }}"
          wire:ignore
          {{ $attributes->whereDoesntStartWith('wire:model') }}
-         class="w-full border border-gray-200 rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600"
+         @class([
+             'w-full border rounded-lg',
+             'border-gray-200 bg-gray-50 dark:bg-gray-700 dark:border-gray-600' => ! $singleLine,
+             // Одна строка выглядит как обычное текстовое поле, кнопки стоят в нём справа
+             'flex flex-row-reverse items-start border-gray-300 bg-gray-50 dark:bg-gray-600 dark:border-gray-500 focus-within:border-primary-600 focus-within:ring-1 focus-within:ring-primary-600' => $singleLine,
+         ])
     >
         {{-- BUTTONS --}}
-        <div class="px-3 py-2 border-b border-gray-200 dark:border-gray-600">
+        <div @class([
+            'px-3 py-2 border-b border-gray-200 dark:border-gray-600' => ! $singleLine,
+            'shrink-0 px-1.5 py-1.5' => $singleLine,
+            'hidden' => ! $hasToolbar,
+        ])>
             <div class="flex items-start justify-between gap-2">
                 <div class="flex items-center space-x-1 rtl:space-x-reverse flex-wrap"
                      @if ($withHtml) x-bind:class="sourceMode && 'opacity-40 pointer-events-none'" @endif
@@ -723,7 +744,10 @@
         </div>
 
         {{-- EDITOR --}}
-        <div class="px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800">
+        <div @class([
+            'px-4 py-2 bg-white rounded-b-lg dark:bg-gray-800' => ! $singleLine,
+            'flex-1 min-w-0 p-3' => $singleLine,
+        ])>
             @if ($withHtml)
                 <textarea x-show="sourceMode"
                           x-cloak
@@ -731,7 +755,12 @@
                           x-on:input="updateSource()"
                           spellcheck="false"
                           aria-label="{{ __('livewire-tiptap::tiptap.html_mode') }}"
-                          class="block w-full min-h-40 p-0 font-mono text-sm leading-6 text-gray-800 bg-white border-0 resize-y dark:bg-gray-800 dark:text-white focus:ring-0 focus:outline-none"
+                          @class([
+                              'block w-full p-0 font-mono text-sm text-gray-800 border-0 resize-y dark:text-white focus:ring-0 focus:outline-none',
+                              'min-h-40 leading-6 bg-white dark:bg-gray-800' => ! $singleLine,
+                              'leading-5 bg-transparent' => $singleLine,
+                          ])
+                          @if ($singleLine) rows="2" @endif
                           style="@if($height)height: {{ $height }}px;@endif"
                 ></textarea>
             @endif
@@ -739,8 +768,12 @@
             <div x-ref="editor"
                  @if ($withHtml) x-show="!sourceMode" @endif
                  id="{{ $editorId }}"
-                 class="block w-full px-0 text-sm text-gray-800 bg-white border-0 dark:bg-gray-800 focus:ring-0 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:border-none overflow-y-auto"
-                 style="font-size: 16px; @if($height)height: {{ $height }}px;@endif"
+                 @class([
+                     'block w-full px-0 text-sm border-0 focus:ring-0 dark:text-white dark:placeholder-gray-400 focus:outline-none focus:border-none',
+                     'text-gray-800 bg-white dark:bg-gray-800 overflow-y-auto' => ! $singleLine,
+                     'text-gray-900 leading-5' => $singleLine,
+                 ])
+                 @unless ($singleLine) style="font-size: 16px; @if($height)height: {{ $height }}px;@endif" @endunless
             ></div>
         </div>
     </div>

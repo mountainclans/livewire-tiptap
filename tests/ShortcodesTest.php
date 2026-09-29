@@ -120,3 +120,12 @@ it('accepts paired shortcodes and lets their buttons show the active state', fun
         ->toContain("isShortcodeActive('hl')")
         ->not->toContain("isShortcodeActive('br')");
 });
+
+it('rejects block shortcodes in a single-line editor', function () {
+    Shortcodes::normalize([
+        [
+            'code' => 'CUT',
+            'kind' => 'block',
+        ],
+    ], singleLine: true);
+})->throws(InvalidArgumentException::class);

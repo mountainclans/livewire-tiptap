@@ -31,9 +31,10 @@ final class Shortcodes
 
     /**
      * @param  array<int, array{code: string, label?: string, kind?: string, hint?: string, color?: string}>  $definitions
+     * @param  bool  $singleLine  редактор из одной строки: блочной метке в нём некуда встать
      * @return list<array{code: string, label: string, kind: string, hint: string, color: string}>
      */
-    public static function normalize(array $definitions): array
+    public static function normalize(array $definitions, bool $singleLine = false): array
     {
         $shortcodes = [];
 
@@ -47,6 +48,10 @@ final class Shortcodes
 
             if (! in_array($kind, [self::KIND_BLOCK, self::KIND_INLINE, self::KIND_PAIR], true)) {
                 throw new InvalidArgumentException("Shortcode [{$code}] has unknown kind [{$kind}].");
+            }
+
+            if ($singleLine && $kind === self::KIND_BLOCK) {
+                throw new InvalidArgumentException("Block shortcode [{$code}] cannot be used in a single-line editor.");
             }
 
             // Парная метка подсвечивает текст, поэтому без указаний она жёлтая, как маркер

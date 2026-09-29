@@ -27,6 +27,11 @@ import {
     shortcodesToEditor,
 } from "./elements/_tiptap-shortcodes.js";
 import {formatSource} from "./elements/_tiptap-source.js";
+import {
+    singleLineExtensions,
+    singleLineFromEditor,
+    singleLineToEditor,
+} from "./elements/_tiptap-single-line.js";
 
 /** Узлы StarterKit, которыми управляет набор инструментов. */
 const STARTER_KIT_NODES = {
@@ -113,11 +118,16 @@ function buildExtensions(tools) {
     return extensions;
 }
 
-export default function tiptap(content, tools = null, shortcodes = []){
+export default function tiptap(content, tools = null, shortcodes = [], options = {}){
     let editor;
 
     // В content метки лежат текстом, как в базе; плашками они становятся только внутри редактора
     const codes = normalizeShortcodes(shortcodes);
+
+    // Однострочный редактор хранит в поле текст, обычный — разметку
+    const singleLine = options?.singleLine === true;
+    const toEditor = (value) => (singleLine ? singleLineToEditor(value, codes) : shortcodesToEditor(value, codes));
+    const fromEditor = (html) => (singleLine ? singleLineFromEditor(html) : shortcodesFromEditor(html));
 
     return {
         content: content,
@@ -134,13 +144,15 @@ export default function tiptap(content, tools = null, shortcodes = []){
             editor = new Editor({
                 element: element,
                 extensions: [
-                    ...buildExtensions(Array.isArray(tools) ? tools : null),
+                    ...(singleLine ? singleLineExtensions() : buildExtensions(Array.isArray(tools) ? tools : null)),
                     ...shortcodeExtensions(codes),
                 ],
-                content: shortcodesToEditor(this.content, codes),
+                content: toEditor(this.content),
                 editorProps: {
                     attributes: {
-                        class: 'format dark:format-invert focus:!outline-none format-blue max-w-none',
+                        class: singleLine
+                            ? 'tiptap-single-line focus:!outline-none max-w-none'
+                            : 'format dark:format-invert focus:!outline-none format-blue max-w-none',
                     },
                 },
                 onCreate({ editor }) {
@@ -148,7 +160,7 @@ export default function tiptap(content, tools = null, shortcodes = []){
                 },
                 onUpdate: ({editor}) => {
                     _this.updatedAt = Date.now()
-                    this.content = shortcodesFromEditor(editor.getHTML());
+                    this.content = fromEditor(editor.getHTML());
                 },
                 onSelectionUpdate({ editor }) {
                     _this.updatedAt = Date.now()
@@ -163,11 +175,11 @@ export default function tiptap(content, tools = null, shortcodes = []){
                     return;
                 }
 
-                if (content === shortcodesFromEditor(editor.getHTML())) {
+                if (content === fromEditor(editor.getHTML())) {
                     return;
                 }
 
-                editor.commands.setContent(shortcodesToEditor(content, codes), false)
+                editor.commands.setContent(toEditor(content), false)
             })
         },
 
@@ -376,7 +388,7 @@ export default function tiptap(content, tools = null, shortcodes = []){
 
         toggleSource() {
             if (!this.sourceMode) {
-                this.source = formatSource(this.content);
+                this.source = this.sourceOf(this.content);
                 this.sourceChanged = false;
                 this.sourceMode = true;
 
@@ -390,10 +402,15 @@ export default function tiptap(content, tools = null, shortcodes = []){
                 return;
             }
 
-            editor.commands.setContent(shortcodesToEditor(this.content, codes), false);
+            editor.commands.setContent(toEditor(this.content), false);
 
             // Редактор принял только ту разметку, которую умеет: поле хранит то, что видно
-            this.content = shortcodesFromEditor(editor.getHTML());
+            this.content = fromEditor(editor.getHTML());
+        },
+
+        // Разметку для чтения разносим по строкам; однострочный текст показываем как есть
+        sourceOf(value) {
+            return singleLine ? (value ?? '') : formatSource(value);
         },
 
         updateSource() {
@@ -404,7 +421,7 @@ export default function tiptap(content, tools = null, shortcodes = []){
         // Значение поменяли снаружи, пока открыт код: показываем новое
         showOuterChange(content) {
             if (content !== this.source) {
-                this.source = formatSource(content);
+                this.source = this.sourceOf(content);
                 this.sourceChanged = true;
             }
         },

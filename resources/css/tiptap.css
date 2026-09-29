@@ -23,6 +23,11 @@
     min-height: 100%;
 }
 
+/* Однострочный режим: редактор выглядит как текстовое поле */
+.tiptap-single-line p {
+    margin: 0;
+}
+
 /* Поле исходного кода не мелькает до запуска Alpine */
 [x-cloak] {
     display: none !important;

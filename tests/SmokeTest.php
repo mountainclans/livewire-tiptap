@@ -99,3 +99,26 @@ it('adds the source mode button and field with the with-html attribute', functio
         // Аргументы редактора от режима кода не зависят
         ->toContain('tiptap($wire.entangle(\'content\'))');
 });
+
+it('turns into a single-line editor: no formatting, plain text storage', function () {
+    $html = html_entity_decode(Blade::render(
+        '<x-ui.tiptap label="Title" wire:model="title" single-line :tools="[\'bold\']" :shortcodes="[[\'code\' => \'hl\', \'kind\' => \'pair\']]" />'
+    ), ENT_QUOTES);
+
+    expect($html)
+        // Набор инструментов в одной строке пуст, какой бы ни передали
+        ->toContain('tiptap($wire.entangle(\'title\'), [], [{"code":"hl"')
+        ->toContain('{"singleLine":true})')
+        ->toContain("insertShortcode('hl')")
+        ->not->toContain('toggleBold()')
+        ->not->toContain('toggleItalic()');
+});
+
+it('hides the toolbar of a single-line editor that has nothing to show in it', function () {
+    $bare = Blade::render('<x-ui.tiptap label="Title" wire:model="title" single-line />');
+    $withSource = Blade::render('<x-ui.tiptap label="Title" wire:model="title" single-line with-html />');
+
+    expect($bare)->toContain('shrink-0 px-1.5 py-1.5 hidden')
+        ->and($withSource)->not->toContain('py-1.5 hidden')
+        ->and($withSource)->toContain('toggleSource()');
+});
