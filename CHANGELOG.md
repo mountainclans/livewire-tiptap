@@ -2,6 +2,14 @@
 
 All notable changes to `livewire-tiptap` will be documented in this file.
 
+## 1.8.1 - 2026-09-30
+
+### Fixed
+
+- Paired shortcodes: the caret can leave a pair at the end of a line and is drawn after the closing marker right away; typing at the pair edge stays outside of it.
+- Paired shortcodes: clicking the pair button with the cursor inside a pair removes the whole pair.
+- Pair markers are rendered as separate elements outside the highlighted text.
+
 ## 1.8.0 - 2026-09-29
 
 Add paired shortcodes: the `pair` kind wraps text, `[hl]word[/hl]`. In the
