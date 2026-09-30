@@ -35,73 +35,74 @@
 
 /* Шорткоды. Цвет метки задаёт приложение (data-color), палитра одна на все виды меток */
 .tiptap-shortcode,
-.tiptap-shortcode-pair {
+.tiptap-shortcode-pair,
+.tiptap-shortcode-pair-marker {
     --shortcode-bg: #f3f4f6;
     --shortcode-border: #9ca3af;
     --shortcode-text: #4b5563;
 }
 
-:is(.tiptap-shortcode, .tiptap-shortcode-pair)[data-color="green"] {
+:is(.tiptap-shortcode, .tiptap-shortcode-pair, .tiptap-shortcode-pair-marker)[data-color="green"] {
     --shortcode-bg: #dcfce7;
     --shortcode-border: #4ade80;
     --shortcode-text: #15803d;
 }
 
-:is(.tiptap-shortcode, .tiptap-shortcode-pair)[data-color="yellow"] {
+:is(.tiptap-shortcode, .tiptap-shortcode-pair, .tiptap-shortcode-pair-marker)[data-color="yellow"] {
     --shortcode-bg: #fef9c3;
     --shortcode-border: #facc15;
     --shortcode-text: #a16207;
 }
 
-:is(.tiptap-shortcode, .tiptap-shortcode-pair)[data-color="blue"] {
+:is(.tiptap-shortcode, .tiptap-shortcode-pair, .tiptap-shortcode-pair-marker)[data-color="blue"] {
     --shortcode-bg: #dbeafe;
     --shortcode-border: #60a5fa;
     --shortcode-text: #1d4ed8;
 }
 
-:is(.tiptap-shortcode, .tiptap-shortcode-pair)[data-color="red"] {
+:is(.tiptap-shortcode, .tiptap-shortcode-pair, .tiptap-shortcode-pair-marker)[data-color="red"] {
     --shortcode-bg: #fee2e2;
     --shortcode-border: #f87171;
     --shortcode-text: #b91c1c;
 }
 
-:is(.tiptap-shortcode, .tiptap-shortcode-pair)[data-color="purple"] {
+:is(.tiptap-shortcode, .tiptap-shortcode-pair, .tiptap-shortcode-pair-marker)[data-color="purple"] {
     --shortcode-bg: #f3e8ff;
     --shortcode-border: #c084fc;
     --shortcode-text: #7e22ce;
 }
 
-.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair) {
+.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair, .tiptap-shortcode-pair-marker) {
     --shortcode-bg: rgba(156, 163, 175, 0.2);
     --shortcode-border: #6b7280;
     --shortcode-text: #d1d5db;
 }
 
-.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair)[data-color="green"] {
+.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair, .tiptap-shortcode-pair-marker)[data-color="green"] {
     --shortcode-bg: rgba(34, 197, 94, 0.2);
     --shortcode-border: #22c55e;
     --shortcode-text: #86efac;
 }
 
-.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair)[data-color="yellow"] {
+.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair, .tiptap-shortcode-pair-marker)[data-color="yellow"] {
     --shortcode-bg: rgba(234, 179, 8, 0.2);
     --shortcode-border: #eab308;
     --shortcode-text: #fde047;
 }
 
-.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair)[data-color="blue"] {
+.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair, .tiptap-shortcode-pair-marker)[data-color="blue"] {
     --shortcode-bg: rgba(59, 130, 246, 0.2);
     --shortcode-border: #3b82f6;
     --shortcode-text: #93c5fd;
 }
 
-.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair)[data-color="red"] {
+.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair, .tiptap-shortcode-pair-marker)[data-color="red"] {
     --shortcode-bg: rgba(239, 68, 68, 0.2);
     --shortcode-border: #ef4444;
     --shortcode-text: #fca5a5;
 }
 
-.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair)[data-color="purple"] {
+.dark :is(.tiptap-shortcode, .tiptap-shortcode-pair, .tiptap-shortcode-pair-marker)[data-color="purple"] {
     --shortcode-bg: rgba(168, 85, 247, 0.2);
     --shortcode-border: #a855f7;
     --shortcode-text: #d8b4fe;
@@ -149,31 +150,32 @@
     vertical-align: 0.0625rem;
 }
 
-/* Парная метка: текст внутри подсвечен, по краям мелко видны сами метки */
-.tiptap-shortcode-pair {
+/* Парная метка: текст внутри подсвечен, по краям мелко видны сами метки.
+   Метки — отдельные элементы снаружи подсветки, а не псевдоэлементы: так курсор
+   у края пары встаёт за ними. Общий фон делает их одним целым с текстом */
+.tiptap-shortcode-pair,
+.tiptap-shortcode-pair-marker {
     padding: 0.0625rem 0.125rem;
-    border-radius: 0.25rem;
     background-color: var(--shortcode-bg);
     box-shadow: inset 0 -1px 0 var(--shortcode-border);
 }
 
-.tiptap-shortcode-pair::before,
-.tiptap-shortcode-pair::after {
+.tiptap-shortcode-pair-marker {
     color: var(--shortcode-text);
     font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.6875em;
     font-weight: 600;
     opacity: 0.75;
+    user-select: none;
 }
 
-.tiptap-shortcode-pair::before {
-    content: '[' attr(data-shortcode) ']';
-    margin-right: 0.125rem;
+.tiptap-shortcode-pair-marker:first-of-type,
+.tiptap-shortcode-pair-marker + .tiptap-shortcode-pair {
+    border-radius: 0.25rem 0 0 0.25rem;
 }
 
-.tiptap-shortcode-pair::after {
-    content: '[/' attr(data-shortcode) ']';
-    margin-left: 0.125rem;
+.tiptap-shortcode-pair + .tiptap-shortcode-pair-marker {
+    border-radius: 0 0.25rem 0.25rem 0;
 }
 
 .tiptap-shortcode.ProseMirror-selectednode {

@@ -1,4 +1,6 @@
-import {Mark, Node, markInputRule, mergeAttributes, nodeInputRule} from '@tiptap/core';
+import {Extension, Mark, Node, markInputRule, mergeAttributes, nodeInputRule} from '@tiptap/core';
+import {Plugin} from '@tiptap/pm/state';
+import {Decoration, DecorationSet} from '@tiptap/pm/view';
 
 /**
  * Шорткод — служебная метка вида [code], которую разбирает сайт, а не редактор.
@@ -52,9 +54,12 @@ export function shortcodeExtensions(shortcodes) {
         .filter(([, ofKind]) => ofKind.length > 0)
         .map(([kind, ofKind]) => shortcodeNode(kind, ofKind));
 
+    const pairs = shortcodes.filter(isPair);
+
     return [
         ...nodes,
-        ...shortcodes.filter(isPair).map(shortcodeMark),
+        ...pairs.map(shortcodeMark),
+        ...(pairs.length > 0 ? [pairMarkers(pairs)] : []),
     ];
 }
 
@@ -74,6 +79,7 @@ export function isPair(shortcode) {
  * У каждой парной метки своё выделение: одно общее не дало бы вложить [c] в [hl].
  * Приоритет выше обычного оформления, чтобы метка обнимала жирный и курсив снаружи
  * и в сохранённом тексте не рвалась на куски.
+ * Пара не тянется за курсором: текст, набранный сразу за закрывающей меткой, остаётся снаружи.
  */
 function shortcodeMark(shortcode) {
     const {code, color, label} = shortcode;
@@ -81,6 +87,7 @@ function shortcodeMark(shortcode) {
     return Mark.create({
         name: shortcodeMarkName(code),
         priority: 1000,
+        inclusive: false,
 
         parseHTML() {
             return [{tag: `span[data-shortcode="${code}"][data-kind="${PAIR}"]`}];
@@ -104,6 +111,119 @@ function shortcodeMark(shortcode) {
             })];
         },
     });
+}
+
+/**
+ * Метки [code] и [/code] по краям пары. Это не часть документа, а украшения:
+ * в сохранённый HTML и в буфер обмена они не попадают. Метки стоят снаружи подсветки,
+ * поэтому курсор у края пары редактор ставит за ними — там же, куда пойдёт набранный текст.
+ */
+function pairMarkers(pairs) {
+    const names = new Map(pairs.map((shortcode) => [shortcodeMarkName(shortcode.code), shortcode]));
+
+    return Extension.create({
+        name: 'shortcodePairMarkers',
+
+        addProseMirrorPlugins() {
+            return [new Plugin({
+                props: {
+                    decorations: (state) => DecorationSet.create(state.doc, markerDecorations(pairRanges(state.doc, names))),
+                },
+                view: () => ({
+                    update: (view) => caretAfterClosingMarker(view, names),
+                }),
+            })];
+        },
+    });
+}
+
+/**
+ * Границы пар в документе: {from, to, mark, code}. Пара тянется по соседним узлам
+ * строки; открытая пара закрывается на конце блока.
+ */
+function pairRanges(doc, names) {
+    const ranges = [];
+
+    doc.descendants((block, blockPos) => {
+        if (!block.isTextblock) {
+            return true;
+        }
+
+        const open = new Map();
+
+        block.forEach((child, offset) => {
+            const from = blockPos + 1 + offset;
+
+            for (const [name, shortcode] of names) {
+                const mark = child.marks.find((candidate) => candidate.type.name === name);
+
+                if (mark && !open.has(name)) {
+                    open.set(name, {from, shortcode});
+                }
+
+                if (!mark && open.has(name)) {
+                    ranges.push({...open.get(name), to: from});
+                    open.delete(name);
+                }
+            }
+        });
+
+        for (const range of open.values()) {
+            ranges.push({...range, to: blockPos + block.nodeSize - 1});
+        }
+
+        return false;
+    });
+
+    return ranges;
+}
+
+function markerDecorations(ranges) {
+    return ranges.flatMap(({from, to, shortcode}) => [
+        Decoration.widget(from, () => marker(`[${shortcode.code}]`, shortcode), {side: 1, marks: [], key: `open-${shortcode.code}-${from}`}),
+        Decoration.widget(to, () => marker(`[/${shortcode.code}]`, shortcode), {side: -1, marks: [], key: `close-${shortcode.code}-${to}`}),
+    ]);
+}
+
+/**
+ * На конце пары набор идёт снаружи, а курсор редактор рисует внутри текста, перед меткой [/code]:
+ * для него оба места — одна и та же позиция. Переставляем курсор за метку, когда он там оказался.
+ */
+function caretAfterClosingMarker(view, names) {
+    const {selection, doc} = view.state;
+
+    if (!selection.empty || !view.hasFocus()) {
+        return;
+    }
+
+    const closing = pairRanges(doc, names).some((range) => range.to === selection.head);
+
+    if (!closing) {
+        return;
+    }
+
+    const {node, offset} = view.domAtPos(selection.head, 1);
+    const domSelection = view.root.getSelection();
+
+    if (!domSelection || (domSelection.anchorNode === node && domSelection.anchorOffset === offset)) {
+        return;
+    }
+
+    domSelection.collapse(node, offset);
+    view.domObserver.setCurSelection();
+}
+
+function marker(text, shortcode) {
+    const element = document.createElement('span');
+    element.className = 'tiptap-shortcode-pair-marker';
+    element.textContent = text;
+    element.title = shortcode.label ?? '';
+
+    if (shortcode.color) {
+        element.setAttribute('data-color', shortcode.color);
+    }
+
+    return element;
 }
 
 function shortcodeNode(kind, shortcodes) {

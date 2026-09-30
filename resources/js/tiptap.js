@@ -435,7 +435,7 @@ export default function tiptap(content, tools = null, shortcodes = [], options =
             }
 
             if (isPair(shortcode)) {
-                editor?.chain().focus().toggleMark(shortcodeMarkName(code)).run();
+                this.togglePair(shortcodeMarkName(code));
 
                 return;
             }
@@ -447,6 +447,23 @@ export default function tiptap(content, tools = null, shortcodes = [], options =
                     attrs: {code},
                 })
                 .run();
+        },
+
+        // Курсор внутри пары без выделения: снимается вся пара, а не только будущий набор
+        togglePair(name) {
+            const chain = editor?.chain().focus();
+
+            if (!chain) {
+                return;
+            }
+
+            if (editor.state.selection.empty && editor.isActive(name)) {
+                chain.extendMarkRange(name).unsetMark(name).run();
+
+                return;
+            }
+
+            chain.toggleMark(name).run();
         },
 
         isShortcodeActive(code) {
